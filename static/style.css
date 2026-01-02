@@ -1,0 +1,717 @@
+:root {
+    --upforschool-primary: #2E49C0;
+    --upforschool-light: #F2F5FF;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    font-size: 20px;
+    margin: 5px 0px;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* view */
+.view-center {
+    text-align: center;
+}
+
+.view-row {
+    margin-top: 16px;
+}
+
+.view-row-alt {
+    margin-top: 32px;
+}
+
+.view-pad {
+    transition: padding .3s;
+}
+
+.view-pad-top {
+    padding-top: 16px;
+}
+
+.view-pad-top-alt {
+    padding-top: 32px;
+}
+
+.view-pad-16 {
+    padding: 16px;
+}
+
+.view-pad-32 {
+    padding: 32px;
+}
+
+.view-pad-right {
+    transition: padding .3s;
+}
+
+.view-pad-left {
+    transition: padding .3s;
+}
+
+.view-container {
+    position: relative;
+    padding: 32px 16px 32px 16px;
+}
+
+.view-container-alt {
+    padding: 32px 0 32px 16px;
+}
+
+.view-image-wrapper {
+    position: relative;
+    width: 124px;
+    height: 123px;
+}
+
+.view-image {
+    position: absolute;
+    left: 0;
+    width: 124px;
+    height: 123px;
+    /* background-color: #E0E0E0; */
+    border-radius: 30px;
+    /* box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15); */
+}
+
+.view-image-label {
+    font-family: "AvenirNext-DemiBold" !important;
+    position: absolute;
+    top: 40px;
+    left: 166px;
+    width: 210px;
+    height: 38px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    color: #fff;
+    border: 2px solid var(--upforschool-primary);
+    line-height: 38px;
+    background-color: var(--upforschool-primary);
+    transition: all .3s;
+    font-weight: bold;
+    padding: 0 8px 0 8px;
+}
+
+.view-image-label:hover {
+    transform: scale(1.05);
+}
+
+.view-image-label-white {
+    border: 2px solid #fff;
+    color: #fff;
+    background: transparent;
+}
+
+.view-image-label-white:hover {
+    border: 2px solid #fff;
+    color: #fff;
+    background: transparent;
+}
+
+.view-file {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.view-btn {
+    font-family: "AvenirNext-DemiBold" !important;
+    background: transparent;
+    display: inline-block;
+    border: 2px solid #000;
+    padding: 8px 16px;
+    font: inherit;
+    text-align: center;
+    border-radius: 25px;
+    transition: ease .3s;
+    cursor: pointer;
+    outline: none;
+    color: black
+}
+
+.view-btn-wide {
+    padding: 10px 32px;
+}
+
+.view-btn-extra-wide {
+    padding: 10px 64px;
+}
+
+.view-btn-compact {
+    margin: 8px 8px 0 0;
+    padding: 8px 24px;
+}
+
+a.view-btn {
+    text-decoration: none;
+}
+
+.view-btn:hover {
+    transform: scale(1.05);
+}
+
+.view-btn:active {
+    /* background-color: #000; */
+    color: #fff;
+}
+
+.view-btn:disabled {
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+.view-btn-sel {
+    background: linear-gradient(121.72deg, #40DB87 3.12%, #52F29B 104.52%);
+    color: #fff;
+    border-color: transparent;
+}
+
+.view-btn-alt {
+    font-family: "AvenirNext-DemiBold" !important;
+    display: inline-block;
+    border: none;
+    font: inherit;
+    text-align: center;
+    background: var(--upforschool-primary);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: ease .3s;
+}
+
+.view-btn-alt:hover {
+    transform: scale(1.05);
+}
+
+.view-btn-alt:active {
+    transform: scale(1);
+}
+
+.view-btn-alt:disabled:hover {
+    cursor: not-allowed;
+    background: linear-gradient(111.12deg, #40DB87 3.12%, #52F29B 104.52%);
+    transform: scale(1);
+}
+
+.view-btn-gray {
+    background: #ddd;
+    color: #888;
+}
+
+.view-btn-gray:disabled:hover {
+    background: #ddd;
+    color: #888;
+}
+
+.view-btn-green {
+    color: #fff;
+    border-color: #40DB87;
+    background-color: #40DB87;
+}
+
+.view-btn-green:disabled {
+    background-color: #b3f1cf;
+    border-color: #b3f1cf;
+    transform: none;
+    cursor: default;
+}
+
+.view-btn-midnight-blue {
+    color: #fff;
+    border-color: var(--midnight-blue);
+    background-color: var(--midnight-blue);
+}
+
+.view-btn-red {
+    color: #fff;
+    background-color: #FF4A4A;
+    border-color: #FF4A4A;
+}
+
+.view-btn-red:disabled {
+    background-color: #ff9d9d;
+    border-color: #ff9d9d;
+    transform: none;
+    cursor: default;
+}
+
+.view-btn-white {
+    border-color: #fff;
+    color: #fff;
+}
+
+.view-btn-white:active {
+    background-color: #fff;
+    color: #28A964;
+}
+
+.view-btn-white-fill {
+    border-color: #fff;
+    background-color: #fff;
+    color: var(--upforschool-primary);
+}
+
+
+.view-btn-white-sel {
+    color: #28A964;
+    background-color: #fff;
+}
+
+.view-btn-90 {
+    padding: 8px;
+    width: 90%;
+}
+
+.view-btn-full {
+    width: 100%;
+    max-width: 460px;
+}
+
+.view-btn-container {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.color-primary {
+    color: var(--upforschool-primary);
+}
+
+.color-black {
+    color: black;
+}
+
+.color-white {
+    color: white;
+}
+
+
+.nav-logo {
+    background-image: url("/static/images/app/upforschool-logo.png");
+}
+
+
+
+/* 
+
+
+
+*/
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.flex-around {
+    display: flex;
+    justify-content: space-around;
+}
+
+.f-right {
+    float: right;
+}
+
+.gap-64 {
+    gap: 64px;
+}
+
+.gap-32 {
+    gap: 32px;
+}
+
+.gap-16 {
+    gap: 16px;
+}
+
+.gap-8 {
+    gap: 8px;
+}
+
+
+.p-8 {
+    padding: 8px;
+}
+
+.p-16 {
+    padding: 16px;
+}
+
+.p-32 {
+    padding: 32px;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+
+.opacity-70 {
+    opacity: 0.7;
+}
+
+
+
+.nav-bar {
+    height: 100px;
+    z-index: 100;
+    background-color: white;
+    padding: 0px 32px;
+    position: sticky;
+    top: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.flex-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.flex-start {
+    justify-content: flex-start;
+}
+
+.flex-columns {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.flex-left {
+    align-items: start;
+}
+
+
+.blue-section {
+    background-color: var(--upforschool-primary);
+    color: white;
+}
+
+.light-section {
+    background-color: var(--upforschool-light);
+}
+
+.pattern-section {
+    background-image: url(/static/images/app/logo-pattern.png);
+    background-blend-mode: multiply;
+}
+
+.center-grid {
+    display: grid;
+    /* align-items: center; */
+    grid-auto-flow: column;
+}
+
+
+.center {
+    text-align: center;
+    align-content: center;
+}
+
+
+.inside-squiggle {
+    width: 300px;
+    text-align: left;
+    line-height: 27px;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.section-content {
+    text-align: center;
+    position: relative;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.square-40 {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.landing-big-price {
+    font-size: 0px;
+    font-weight: bold;
+    color: #2EF0C0;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+
+.split-page {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 0px;
+}
+
+.split-page-right {
+    height: 100%;
+    overflow: scroll;
+    max-width: 600px;
+}
+
+
+/* Show the element only if screen width is below 600px */
+@media (max-width: 800px) {
+    .hide-on-small {
+        display: none;
+    }
+}
+
+.form-label {
+    text-align: left;
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 4px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    outline: none;
+    transition: border-color .3s;
+    box-sizing: border-box;
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.container {
+    position: relative;
+    margin: auto;
+    width: 90%;
+}
+
+.center-items {
+    align-items: center;
+}
+
+
+.group-column-third {
+    float: left;
+    width: 33.33%;
+    text-align: center;
+}
+
+.group-column-third:first-child {
+    text-align: left;
+}
+
+.group-column-third:last-child {
+    text-align: right;
+}
+
+
+
+.form-check-hidden {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    padding: 0;
+}
+
+.form-check-hidden-label {
+    font-family: "AvenirNext-DemiBold" !important;
+    border: 2px solid #ddd;
+    color: #5e5e5e;
+    padding: 8px 0px;
+    font: inherit;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 20px;
+    transition: background-color .3s;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 8px;
+    display: block;
+    width: 100%;
+    text-wrap: nowrap;
+}
+
+.form-check-hidden:checked+label {
+    background-color: var(--upforschool-primary);
+    border: 2px solid var(--upforschool-primary);
+    color: #fff;
+}
+
+.form-textarea {
+    width: 100%;
+    height: 240px;
+    resize: none;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    outline: none;
+    transition: border-color .3s;
+}
+
+.third {
+    width: 32%;
+}
+
+.half {
+    width: 49%;
+}
+
+.bolder {
+    font-weight: bolder;
+}
+
+/* Overlay styles */
+
+.overlay {
+    z-index: 5;
+    /* hide absolute */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all .3s;
+}
+
+.overlay-inner {
+    background: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
+    width: 400px;
+}
+
+.overlay-inner a {
+    text-decoration: underline;
+}
+
+.overlay-inner-wide {
+    background: #fff;
+    position: absolute;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.overlay-bubble {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: -50px;
+    color: #fff;
+    line-height: 100px;
+    font-size: 24px;
+}
+
+.overlay-bubble>img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+}
+
+.overlay-bubble>svg {
+    margin-top: 28px;
+}
+
+.overlay-enter {
+    opacity: 0;
+}
+
+.overlay-leave-active {
+    opacity: 0;
+}
+
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin .7s ease-in-out infinite;
+    margin-bottom: 15px;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

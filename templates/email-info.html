@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Up For Sports</title>
+  <style>
+    @font-face {
+      font-family: "AvenirNext";
+      src: url('{{.Props.AppURL}}/{{.Props.Static}}fonts/AvenirNext-Regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "AvenirNext";
+      src: url('{{.Props.AppURL}}/{{.Props.Static}}fonts/AvenirNext-Bold.woff2') format('woff2');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    body {
+      font-family: "AvenirNext", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    @media only screen and (max-width: 620px) {
+      table[class=body] h1 {
+        font-size: 28px !important;
+        margin-bottom: 10px !important;
+      }
+
+      table[class=body] p,
+      table[class=body] ul,
+      table[class=body] ol,
+      table[class=body] td,
+      table[class=body] span,
+      table[class=body] a {
+        font-size: 16px !important;
+      }
+
+      table[class=body] .wrapper,
+      table[class=body] .article {
+        padding: 10px !important;
+      }
+
+      table[class=body] .content {
+        padding: 0 !important;
+      }
+
+      table[class=body] .container {
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      table[class=body] .main {
+        border-left-width: 0 !important;
+        border-radius: 0 !important;
+        border-right-width: 0 !important;
+      }
+
+      table[class=body] .img-responsive {
+        height: auto !important;
+        max-width: 100% !important;
+        width: auto !important;
+      }
+    }
+
+    @media all {
+      .ExternalClass {
+        width: 100%;
+      }
+
+      .ExternalClass,
+      .ExternalClass p,
+      .ExternalClass span,
+      .ExternalClass font,
+      .ExternalClass td,
+      .ExternalClass div {
+        line-height: 100%;
+      }
+
+      .apple-link a {
+        color: inherit !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        text-decoration: none !important;
+      }
+
+      #MessageViewBody a {
+        color: inherit;
+        text-decoration: none;
+        font-size: inherit;
+        font-family: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+      }
+
+      .btn-primary table td:hover {
+        background-color: #ff825e !important;
+        background: #ff825e !important;
+      }
+
+      .btn-primary a:hover {
+        background-color: #ff825e !important;
+        background: #ff825e !important;
+      }
+    }
+  </style>
+</head>
+
+<body class=""
+  style="background-color: #f1f1f1; font-family: AvenirNext, sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+  <table border="0" cellpadding="0" cellspacing="0" class="body"
+    style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f1f1f1;">
+    <tr>
+      <td style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+      <td class="container"
+        style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
+        <div class="content"
+          style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+          <span class="preheader"
+            style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">{{.Data.Preview}}</span>
+          <table class="header"
+            style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #f1f1f1; border-radius: 3px; Margin-top: 20px; Margin-bottom: 20px;">
+            <tr>
+              <td style="text-align: center;">
+                <img src="{{.Props.AppURL}}{{.Props.Static}}images/email/logo.png" alt="Up For Sports" width="95"
+                  height="57" border="0" style="border:0; outline:none; text-decoration:none;">
+              </td>
+            </tr>
+          </table>
+          <!-- START CENTERED WHITE CONTAINER -->
+          <table class="main"
+            style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
+
+            <!-- START MAIN CONTENT AREA -->
+            <tr>
+              <td class="wrapper"
+                style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+                <table border="0" cellpadding="0" cellspacing="0"
+                  style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                  <tr>
+                    <td
+                      style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top; text-align: center;">
+                      <p
+                        style="font-family: AvenirNext, sans-serif; font-size: 24px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
+                        {{.Data.Title}}</p>
+                      {{range .Data.Content}}
+                      <p
+                        style="font-family: AvenirNext, sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                        {{.}}</p>
+                      {{end}}
+
+                      <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary"
+                        style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
+                        <tbody>
+                          <tr>
+                            <td align="center"
+                              style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top; padding-top: 15px; padding-bottom: 15px;">
+                              <table border="0" cellpadding="0" cellspacing="0"
+                                style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
+                                <tbody>
+                                  <tr>
+                                    <td
+                                      style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top; background-color: #ff825e; border-radius: 20px; text-align: center;">
+                                      <a href="{{.Props.AppURL}}{{.Data.Link}}" target="_blank"
+                                        style="display: inline-block; color: #ffffff; background-color: #ff825e; border-radius: 20px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; background: linear-gradient(131.87deg, #FFD15A 0%, #FF2F61 101.56%);">Till
+                                        Up For Sports</a> </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- END MAIN CONTENT AREA -->
+          </table>
+
+          <!-- START FOOTER -->
+          <div class="footer"
+            style="clear: both; Margin-top: 66px; Margin-bottom: 66px; text-align: center; width: 100%;">
+
+            <table border="0" cellpadding="0" cellspacing="0"
+              style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
+              <tbody>
+                <tr>
+                  <td style="text-align: right;">
+                    <a href="https://www.instagram.com/upforsports/"><img
+                        src="{{.Props.AppURL}}/{{.Props.Static}}images/email/ig.png" alt="Instagram" width="36px"
+                        height="36px" border="0"
+                        style="border:0; outline:none; text-decoration:none; Margin-bottom: 8px; Margin-right: 8px"></a>
+                  </td>
+                  <td style="text-align: left;">
+                    <a href="https://www.facebook.com/upforsports.se/"><img
+                        src="{{.Props.AppURL}}/{{.Props.Static}}images/email/fb.png" alt="Facebook" width="36px"
+                        height="36px" border="0"
+                        style="border:0; outline:none; text-decoration:none; Margin-bottom: 8px; Margin-left: 8px"></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0"
+              style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+              <tr>
+                <td class="content-block powered-by"
+                  style="font-family: AvenirNext, sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                  <a href="https://www.upforsports.se"
+                    style="color: #000000; font-size: 12px; text-align: center;">www.upforsports.se</a>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- END FOOTER -->
+
+          <!-- END CENTERED WHITE CONTAINER -->
+        </div>
+      </td>
+      <td style="font-family: AvenirNext, sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+    </tr>
+  </table>
+</body>
+
+</html>

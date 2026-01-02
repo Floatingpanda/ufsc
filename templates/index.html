@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "head" . }}
+</head>
+
+<body>
+    {{template "nav-public" .}}
+    <main>
+        <div class="blue-section center" style="padding: 150px 0px">
+            <div class="section-content">
+                <img src="{{.Props.Static}}/images/app/landing-squiggle-smile.png"
+                    style="position: absolute; top: 70px; left: 140px; width: 50px;" />
+                <img src="{{.Props.Static}}/images/app/landing-squiggle-line.png"
+                    style="position: absolute; top: 150px; right: 100px; width: 200px;" />
+
+                <img src="{{.Props.Static}}/images/app/logo-2.png" alt="logo" class="" />
+                <h1 class="view-row-alt">ENKALRE OCH SNABBARE ATT HITTA LÄXHJÄLP!</h1>
+                <p class="view-row opacity-70">Här hittar du lämplig studiecoach som du själv valt ut, utan
+                    mellanhänder.</p>
+
+                <div class="flex gap-32 view-row-alt">
+                    <button class="view-btn view-btn-white view-btn-extra-wide">Skapa konto</button>
+                    <button class="view-btn view-btn-alt view-btn-white-fill view-btn-extra-wide">Logga in</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="center color-primary" style="padding: 50px 0px">
+            <h1>Så här enkelt är det!</h1>
+            <p class="color-black opacity-70">Du registrerar dig som studiecoach eller elev</p>
+
+            <div class="flex gap-64 view-row-alt">
+                <div class="inside-squiggle"
+                    style="padding: 50px 70px; background-image: url({{.Props.Static}}/images/app/landing-squiggle1.png);">
+                    <h2>Studiecoach</h2>
+                    <p>Registrera din profil. Ta emot förfrågningar om läxhjälp och boka det som passar dig utan
+                        mellanhänder. </p>
+                </div>
+
+                <div class="inside-squiggle"
+                    style="padding: 50px 70px; background-image: url({{.Props.Static}}/images/app/landing-squiggle2.png);">
+                    <h2>Elev</h2>
+                    <p>Registera dig och välj ut vilka studiecoacher som du vill skicka din förfrågan till. Du kan välja
+                        fysisk eller online lektion.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="blue-section center" style="padding: 80px 0px">
+            <div class="section-content">
+                <img style="position: absolute; top: -50px; left: 110px; width: 120px;"
+                    src="{{.Props.Static}}/images/app/landing-squiggle-arrow.png">
+                <h1>Några ämnen vi erbjuder läxhjälp inom</h1>
+
+                <div class="view-row flex-left flex flex-columns gap-32" style="height: 300px">
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-biology.png" alt="Biology" />
+                        <p>Biology</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-economy.png" alt="Ekonomi" />
+                        <p>Ekonomi</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Engelska" />
+                        <p>Engelska</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Franska" />
+                        <p>Franska</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-physics.png" alt="Fysik" />
+                        <p>Fysik</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-history.png" alt="Historia" />
+                        <p>Historia</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Italienska" />
+                        <p>Italienska</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40" src="{{.Props.Static}}/images/subjects/icon-law.png"
+                            alt="Juridik" />
+                        <p>Juridik</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-chemistry.png" alt="Kemi" />
+                        <p>Kemi</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40" src="{{.Props.Static}}/images/subjects/icon-math.png"
+                            alt="Mattematik" />
+                        <p>Mattematik</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-tests.png" alt="Nationella" />
+                        <p>Nationella prov</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-programming.png" alt="Programmering" />
+                        <p>Programmering</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Tyska" />
+                        <p>Tyska</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-social.png" alt="Samhällskunskap" />
+                        <p>Samhällskunskap</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Spanska" />
+                        <p>Spanska</p>
+                    </div>
+                    <div class="flex gap-8"><img class="square-40"
+                            src="{{.Props.Static}}/images/subjects/icon-language.png" alt="Svenska" />
+                        <p>Svenska</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="pattern-section light-section color-primary" style="padding: 100px 0px">
+            <div class="section-content" style="width: 500px">
+                <img src="{{.Props.Static}}/images/app/landing-stars.png" />
+                <h1 class="view-row">“Från tårar vid köksbordet till stolthet efter varje prov”</h1>
+                <p class="opacity-70 view-row-alt">/ Förälder till elev hos Up For School</p>
+            </div>
+        </div>
+
+        <div class="section-content color-primary" style="padding: 50px 0px">
+            <h1 class="inline-block p-32">Kostnad för att hitta läxhjälp</h1>
+            <img class="inline-block" src="{{.Props.Static}}/images/app/squiggle-point.png" />
+            <div class="flex gap-32 view-row-alt" style="justify-content: center; align-items: center;">
+                <img src="{{.Props.Static}}/images/app/49kr.png" alt="49kr" />
+                <img src="{{.Props.Static}}/images/app/99kr.png" alt="99kr" />
+                <img src="{{.Props.Static}}/images/app/249kr.png" alt="249kr" />
+            </div>
+        </div>
+
+        <div class="section-content" style="padding: 50px 0px">
+            <div class="flex gap-8">
+                <img class="inline-block" src="{{.Props.Static}}/images/app/squiggle-point.png" />
+                <p class="inline-block opacity-70 italic">Priserna är inkl moms. Det är inget abonnemang och ingen
+                    bindningstid. </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

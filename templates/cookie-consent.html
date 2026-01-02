@@ -1,0 +1,108 @@
+{{define "cookie-consent"}}
+    <div class="cookie-consent">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-content-1">
+                <svg width="48" height="48" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="37" cy="37" r="37" fill="#40DB88"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M37 57.1667C26 52.2663 20.5 47.3774 20.5 42.5V24.1667C20.5 22.7594 21.0401 22.4324 22.5349 21.5272C22.9874 21.2531 23.5275 20.9261 24.1667 20.5C24.4633 20.3023 30.6992 16.8333 37 16.8333C42.4913 16.8333 47.0833 18.6667 49.8333 20.5C50.4725 20.9261 51.0126 21.2531 51.4651 21.5272C52.9599 22.4324 53.5 22.7594 53.5 24.1667C53.5361 24.5649 53.5184 33.0347 53.507 38.4569C53.5031 40.306 53.5 41.8007 53.5 42.5C53.5 47.3889 48 52.2778 37 57.1667ZM49.8333 42.5C49.8333 42.0778 49.8344 41.3703 49.8367 40.2169L49.8441 36.6359C49.8465 35.4774 49.8483 34.4833 49.8499 33.5346C49.8567 29.4423 49.8548 25.93 49.8509 24.8437L49.599 24.6874L49.5989 24.6873C49.0061 24.3195 48.2335 23.8402 47.7994 23.5509C45.0929 21.7465 41.1437 20.5 37 20.5C33.0365 20.5 27.8858 22.4273 26.2006 23.5509C25.7665 23.8402 24.9938 24.3196 24.4009 24.6874L24.4009 24.6874L24.1667 24.8328V42.5C24.1667 45.2655 28.2534 49.0427 37.0017 53.137C45.749 49.0519 49.8333 45.2761 49.8333 42.5ZM43.037 30.2036L35.1667 38.0739L30.963 33.8703L28.3703 36.463L35.1667 43.2594L45.6297 32.7964L43.037 30.2036Z" fill="white"/>
+                </svg>
+                {{if eq .Data.Lang "sv"}}
+                    <p>Surfa smidigt och säkert med cookies</p>
+                {{else}}
+                    <p>Surf easy and safe with cookies</p>
+                {{end}}
+            </div>
+            <div class="cookie-consent-content-2">
+
+                {{if eq .Data.Lang "sv"}}
+                    <p>Vi använder cookies för att erbjuda dig bästa möjliga användarupplevelse. Du kan själv aktivera och avaktivera cookies. Läs mer i vår <a class="link" href="/cookies">cookie policy</a>.</p>
+                {{else}}
+                    <p>We use cookies in order to offer you the best user experience. You can activate and deactivate cookies. Read more in our <a class="link" href="/cookies">cookie policy</a>.</p>
+                {{end}}
+
+                <div class="cookie-answer">
+                    <button id="cookie-deny" class="cookie-btn">{{if eq .Data.Lang "sv"}}Acceptera endast nödvändinga{{else}}Accept necessary cookies only{{end}}</button>
+                    <button id="cookie-accept" class="cookie-btn cookie-btn-accept">{{if eq .Data.Lang "sv"}}Acceptera alla{{else}}Accept all cookies{{end}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '{{.Props.GoogleAnalytics}}');
+
+        var consent = (function () {
+            "use strict";
+
+            function addAnalytics() {
+                var script = document.createElement("script");
+                script.type = "text/javascript"
+                script.async = "true";
+                script.src = "https://www.googletagmanager.com/gtag/js?id={{.Props.GoogleAnalytics}}";
+
+                document.head.appendChild(script);
+            }
+
+            var consent = {
+                el: function () {
+                    return document.querySelector(".cookie-consent");
+                },
+                set: function (answer) {
+                    var cookie = "cookie-consent=" + answer;
+                    var path = "path=/";
+                    var days = 365;
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days*24*60*60*1000));
+                    var expires = "expires=" + date.toUTCString();
+
+                    document.cookie = cookie + ";" + expires + ";" + path;
+                },
+                get: function () {
+                    var cookie = document.cookie;
+
+                    if (cookie.indexOf("cookie-consent=yes") > -1) {
+                        return "yes"
+                    }
+
+                    if (cookie.indexOf("cookie-consent=no") > -1) {
+                        return "no"
+                    }
+
+                    return "maybe";    
+                },
+                acceptAnalytics: function () {
+                    this.el().remove();
+                    consent.set("yes");
+                    addAnalytics();
+                },
+                denyAnalytics: function () {
+                    this.el().remove();
+                    consent.set("no");
+                },
+                showOptions: function () {
+                    var el = this.el();
+                    el.style.display = "grid";
+                    el.querySelector("#cookie-accept").addEventListener("click", this.acceptAnalytics.bind(this));
+                    el.querySelector("#cookie-deny").addEventListener("click", this.denyAnalytics.bind(this));
+                }
+            };
+
+            let answer = consent.get();
+
+            if (answer === "yes") {
+                addAnalytics();
+                consent.el().remove();
+            } else if (answer == "no") {
+                consent.el().remove();
+            } else {
+                consent.showOptions();
+            }
+
+            return consent;
+        }());
+    </script>
+{{end}}

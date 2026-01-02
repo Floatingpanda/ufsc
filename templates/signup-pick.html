@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Up For School - {{.Data.Title}}</title>
+    <link rel="icon" href="{{.Props.Static}}/images/app/icon-48x48.png">
+    <link rel="apple-touch-icon" href="{{.Props.Static}}images/app/apple-touch-icon.png">
+    <link rel="stylesheet" href="{{.Props.Static}}/style.css">
+</head>
+
+<body>
+    {{template "nav-public" .}}
+
+    <div class="page-container green">
+
+        <div class="group">
+            <div class="main">
+
+                <div class="signup-container">
+                    <div class="view-container">
+                        <a href="/signup?role=team">
+                            <div class="container">
+                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-team.jpg">
+                                <div class="view-container">
+                                    <h1 class="view-center">
+                                        {{if eq .Data.Lang "sv"}}
+                                        Registrera ert<br> lag
+                                        {{else}}
+                                        Register your<br> team
+                                        {{end}}
+                                    </h1>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="signup-container">
+                    <div class="view-container">
+                        <a href="/signup?role=referee">
+                            <div class="container">
+                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-referee.jpg">
+                                <div class="view-container">
+                                    <h1 class="view-center">
+                                        {{if eq .Data.Lang "sv"}}
+                                        Registrera dig<br>som domare
+                                        {{else}}
+                                        Register as a<br> referee
+                                        {{end}}
+                                    </h1>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="signup-container">
+                    <div class="view-container">
+                        <a href="/signup?role=cup">
+                            <div class="container">
+                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-cup.jpg">
+                                <div class="view-container">
+                                    <h1 class="view-center">
+                                        {{if eq .Data.Lang "sv"}}
+                                        Registrera dig<br>som cuparrangör
+                                        {{else}}
+                                        Register as a<br> cup organizer
+                                        {{end}}
+                                    </h1>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!-- BankID signing step -->
+{{define "signup-bankid"}}
+<div id="bankid-section" class="split-page-right">
+    <div class=" container">
+        <div class="view-container">
+            <h1 class="color-primary">Skapa ett konto!</h1>
+
+            <p class="view-row opacity-50">För att säkerställa att våra studiecoacher verkligen är de som de påstår sig
+                vara så
+                använder vi BankID.
+                Detta stärker säkerheten och skapar en tryggare tjänst för våra användare.</p>
+            <br>
+
+            <p id="sign-error" style="display: none" class="message view-row"></p>
+            <!-- QR-kod modal -->
+            <div id="bankid-modal" style="display: none" name="overlay">
+                <div class="overlay view-center">
+                    <div class="overlay-inner flex-columns flex gap-8">
+                        <img src="{{.Props.Static}}/images/app/bankid_logo.png" alt="BankID"
+                            style="width: 150px; height: 150px; display: block; object-fit: cover;">
+
+                        <!-- QR-kod -->
+                        <img style="display: none; margin-bottom: 20px" id="qr-code"></img>
+
+                        <!-- Spinner -->
+                        <div id="bankid-spinner" style="width: 200px; text-align: center; display: none;">
+                            <p>Öppna BankID-appen</p>
+                            <div class="spinner"></div>
+                        </div>
+
+                        <button id="bankid-modal-cancel" class="view-btn" style=" margin-bottom: 20px"
+                            id="close-bankid-modal">Avbryt</button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display: flex; flex-direction: column;flex-wrap: nowrap; justify-content: center; align-items: center;">
+                <img src="{{.Props.Static}}/images/app/bankid_logo.png" alt="BankID"
+                    style="width: 150px; height: 150px; display: block; object-fit: cover;">
+
+                <!-- BankID options -->
+                <div class="view-pad">
+                    <div id="bankid-options" class="center">
+                        <button class="view-btn view-btn-alt"
+                            style="padding-left: 20px; padding-right: 20px; width:300px"
+                            id="bankid-same-device-button">Öppna BankID på denna enhet</button>
+                        <p class="view-row bolder">Eller</p>
+                        <button class="view-row view-btn view-btn-alt" style="width:300px" id="bankid-button">Visa
+                            QR-kod</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-container"></div>
+        </div>
+
+
+        <script type="module">
+            import { startBankidAuth, cancelBankidAuth, startPollingResult, startPollingQRCode } from '{{.Props.Static}}/bankid.js';
+
+            let bankidModalEl = document.getElementById('bankid-modal')
+            let bankidSpinnerEl = document.getElementById('bankid-spinner')
+            let bankidModalCancelEl = document.getElementById('bankid-modal-cancel')
+            let qrCodeEl = document.getElementById('qr-code')
+
+            let orderRef
+            bankidModalCancelEl.addEventListener('click', () => {
+                if (!orderRef) return
+
+                cancelBankidAuth(orderRef)
+                bankidSpinnerEl.style.display = "none";
+                bankidModalEl.style.display = "none";
+                qrCodeEl.style.display = "none";
+            })
+
+            let onComplete = (data) => {
+                if (data.userExists) {
+                    let signErr = document.getElementById("sign-error")
+                    signErr.style.display = "block"
+                    signErr.innerHTML = "Ett konto finns redan för signerat BankID"
+                    bankidSpinnerEl.style.display = "none";
+                    bankidModalEl.style.display = "none";
+                    qrCodeEl.style.display = "none";
+                    return
+                }
+
+                document.getElementById("bankid-section").style.display = "none";
+                document.getElementById("signup-form").style.display = "block";
+                document.getElementById("first-name").value = data.givenName
+                document.getElementById("last-name").value = data.surName
+                document.getElementById("ssn").value = data.ssn
+                document.getElementById("token").value = data.token
+            }
+
+            let onTimeout = (data) => {
+                bankidSpinnerEl.style.display = "none";
+                bankidModalEl.style.display = "none";
+                qrCodeEl.style.display = "none";
+            }
+
+            let onNewQRCode = (url) => {
+                bankidModalEl.style.display = "block"
+                bankidSpinnerEl.style.display = "none";
+                qrCodeEl.style.display = "block"
+                qrCodeEl.src = url;
+            }
+
+            document.getElementById('bankid-button').addEventListener('click', async () => {
+                let openBankIDApp = false
+                orderRef = await startBankidAuth(openBankIDApp)
+                startPollingQRCode(orderRef, onNewQRCode, onComplete, onTimeout);
+            })
+
+            document.getElementById('bankid-same-device-button').addEventListener('click', async () => {
+                let openBankIDApp = true
+                orderRef = await startBankidAuth(openBankIDApp)
+                startPollingResult(orderRef, onComplete);
+
+                qrCodeEl.style.display = "none"
+                bankidSpinnerEl.style.display = "block";
+                bankidModalEl.style.display = "block"
+            })
+        </script>
+
+    </div>
+</div>
+{{end}}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Up For School</title>
+    <link rel="icon" href="{{.Props.Static}}/images/app/icon-48x48.png">
+    <link rel="apple-touch-icon" href="{{.Props.Static}}/images/app/apple-touch-icon.png">
+    <link rel="stylesheet" href="{{.Props.Static}}/style.css">
+</head>
+
+<body>
+    {{template "nav-public" .}}
+
+    <div class="view-container view-center">
+
+        <h3>Ange verifieringskod</h3>
+        <p>Vänligen kontrollera din mapp för skräppost/spam om du inte fått ett mail med en verifieringskod inom några
+            minuter.
+        <p>
+
+        </p>Om du inte fått någon mail inom några minuter, vänligen kontakta hej@upforsports.se så att vi kan hjälpa dig
+        med registreringen.</p>
+
+        <form method="POST">
+            <input type="hidden" name="id" value="{{.Data.ID}}">
+            <div class="view-row">
+                <input type="text" minlength="4" maxlength="4" name="code" class="signup-token" autofocus required>
+            </div>
+            <div class="view-row">
+                <button class="view-btn signup-button">Slutför</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
