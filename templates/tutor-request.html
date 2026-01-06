@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "head" . }}
+
+</head>
+
+{{ define "tutor-request-header" }}
+<div class="header-squiggle">
+    <h3 style="padding: 22px" class=" color-primary">{{.}}</h3>
+    <img class="show-on-large" style="position: absolute; top: -15px; right: -50px;"
+        src="/static/images/app/squiggle-star-1.png" />
+    <img class="show-on-large" style="position: absolute; top: 40px; left: -60px;"
+        src="/static/images/app/squiggle-star-2.png" />
+</div>
+{{ end }}
+
+<body>
+
+    {{template "nav" .Name}}
+    <div class="full-page blue-section">
+        <div class="view-container">
+            <div id="step-container" class="step-right center container fade-container">
+                <!-- step 1 -->
+                <div id="step-1" class="view-row step active">
+                    {{ template "tutor-request-header" "Vilket ämne behöver du hjälp med?" }}
+
+                    <div class="view-row-alt step-content">
+                        <div style="max-width: 600px" class="container">
+                            <div class="flex gap-16">
+                                {{ range .Data.Subjects }}
+                                <button onclick="selectSubject(event, '{{.ID}}')" style="width: 180px;"
+                                    class="view-btn view-btn-white subject">{{ .Name }}</button>
+                                {{ end }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- step 2 -->
+                <div id="step-2" class="view-row step">
+                    {{ template "tutor-request-header" "Vilken nivå söker du?" }}
+
+                    <div class="view-row-alt step-content">
+                        <div style="max-width: 200px" class="container">
+                            <div class="flex gap-16">
+                                {{ range .Data.Levels }}
+                                <button onclick="selectLevel(event, '{{.ID}}')" style="width: 100%;"
+                                    class="view-btn view-btn-white level">{{ .Name }}</button>
+                                {{ end }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- step 3 -->
+                <div id="step-3" class="view-row step">
+                    {{ template "tutor-request-header" "Online eller fysisk hjälp?" }}
+
+                    <div class="view-row-alt step-content">
+                        <div style="max-width: 600px; " class="container">
+                            <div class="flex gap-16">
+                                <button onclick="selectLocation(event, 'online')" style="width: 180px;"
+                                    class="view-btn view-btn-white location">Online</button>
+                                {{ range .Data.Locations }}
+                                <button onclick="selectLocation(event, '{{.ID}}')" style="width: 180px;"
+                                    class="view-btn view-btn-white location">{{ .Name }}</button>
+                                {{ end }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- step 4 -->
+                <div id="step-4" class="view-row step">
+                    {{ template "tutor-request-header" "Välj Studiecoach" }}
+
+                    <div id="tutors-container" class="view-container flex step-content" hx-get="/list/tutors"
+                        hx-trigger="loadTutors" hx-target="this" hx-swap="innerHTML"
+                        class="view-container flex step-content">
+                        <!-- {{ range .Data.Tutors }}
+                        <div class="m-8">
+
+                            <div class="card-profile">
+                                <img class="list-image" class="list-image"
+                                    src="{{$.Props.Static}}/images/tutors/{{.Image}}" />
+
+                                <div class="m-8">
+                                    <p class="text-medium color-black text-strong"><strong>{{.FirstName}}</strong></p>
+                                    <p class="text-light text-small">0 bokade pass</p>
+                                </div>
+                                <button style="color: grey; border-color: grey;"
+                                    class="m-4 text-light view-btn view-btn-small">Välj</button>
+                                <p class="m-4 text-light text-medium">läs mer</p>
+                            </div>
+                        </div>
+                        {{ end }} -->
+
+
+                    </div>
+                </div>
+                <div id="step-5" class="view-row step">5;
+                </div>
+                <div id="step-6" class="view-row step">6</div>
+                <div id="step-7" class="view-row step">7</div>
+            </div>
+
+            <div class="view-row-alt">
+                <div class="flex flex-row m-16 gap-16">
+                    <div id="back-button" class="back-button"></div>
+                    <button id="next-button" class="view-btn view-btn-white-fill view-btn-wide" disabled>Nästa</button>
+                </div>
+            </div>
+
+            <div id="step-tracker" class="view-row-alt flex-rows flex">
+                <div class="step-arrow-active step-arrow">1</div>
+                <div class="step-arrow">2</div>
+                <div class="step-arrow">3</div>
+                <div class="step-arrow">4</div>
+                <div class="step-arrow">5</div>
+                <div class="step-arrow">6</div>
+                <div class="step-arrow">7</div>
+            </div>
+        </div>
+    </div>
+    <!-- {{.Data}} -->
+
+    <style>
+
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script>
+        let step = 1;
+
+        let tutorRequest = {
+            subject: -1,
+            level: -1,
+            location: -1,
+            isOnline: false,
+            description: "",
+            dateTime: null,
+            duration: null,
+            studentName: null,
+            contactInfo: null
+        }
+
+        let stepArrows = document.querySelectorAll('.step-arrow');
+        let stepper = document.getElementById('step-container');
+        let nextButton = document.getElementById('next-button');
+        let backButton = document.getElementById('back-button');
+        let steps = document.querySelectorAll('.step');
+
+
+        let levels = document.querySelectorAll('.level');
+        let subjects = document.querySelectorAll('.subject');
+
+        let selectSubject = (e, subject) => {
+            tutorRequest.subject = subject;
+            subjects.forEach(s => s.classList.remove('view-btn-green-alt'));
+            e.target.classList.toggle('view-btn-green-alt');
+            validateStep();
+        }
+
+        let selectLevel = (e, level) => {
+            let turnOff = tutorRequest.level == level
+            tutorRequest.level = turnOff ? -1 : level;
+            levels.forEach(lv => lv.classList.remove('view-btn-green-alt'));
+            turnOff ? e.target.classList.remove('view-btn-green-alt') : e.target.classList.add('view-btn-green-alt');
+            validateStep();
+        }
+
+        let selectLocation = (e, location) => {
+            tutorRequest.location = location;
+            tutorRequest.isOnline = location === 'online';
+            let locations = document.querySelectorAll('.location');
+            locations.forEach(l => l.classList.remove('view-btn-green-alt'));
+            e.target.classList.add('view-btn-green-alt');
+            validateStep();
+        }
+
+        nextButton.onclick = () => {
+            stepper.style.viewTransitionName = 'step-right';
+            if (step === 3) fetchTutors();
+            if (step < 7) tryViewTransition(() => updateStep(1));
+        };
+
+        backButton.onclick = () => {
+            stepper.style.viewTransitionName = 'step-left';
+            if (step > 1) tryViewTransition(() => updateStep(-1));
+        };
+
+        async function fetchTutors() {
+            let el = document.getElementById("tutors-container")
+            el.setAttribute(
+                "hx-vals",
+                JSON.stringify({
+                    subject: tutorRequest.subject,
+                    level: tutorRequest.level,
+                    location: tutorRequest.location
+                })
+            );
+
+            htmx.trigger("#tutors-container", "loadTutors")
+
+        }
+
+        function fetchTutors2() {
+            axios.get('/api/tutors', {
+                params: {
+                    online_lessions: tutorRequest.isOnline ? "TRUE" : "FALSE",
+                    subject: tutorRequest.subject,
+                    level: tutorRequest.level,
+                    location: tutorRequest.location
+                }
+            }).then(response => {
+                console.log("Tutors:", response.data);
+            }).catch(error => {
+                console.error("Error fetching tutors:", error);
+            });
+        }
+
+        function validateStep() {
+            let isValid = false;
+            if (step === 1) isValid = tutorRequest.subject !== -1;
+            if (step === 2) isValid = tutorRequest.level !== -1;
+            if (step === 3) isValid = tutorRequest.location !== -1;
+
+            nextButton.disabled = !isValid;
+        }
+
+        function updateStep(direction) {
+            step += direction;
+            console.log("step", step);
+            const idx = step - 1
+            stepArrows[idx - direction].classList.remove('step-arrow-active');
+            stepArrows[idx].classList.add('step-arrow-active');
+            stepArrows[idx].classList.remove('step-arrow-white');
+            if (step > 1) stepArrows[idx - 1].classList.add('step-arrow-white');
+
+            steps.forEach((s, index) => (index === idx) ? s.classList.add('active') : s.classList.remove('active'));
+            validateStep();
+        }
+
+        let tryViewTransition = (f) => document.startViewTransition ? document.startViewTransition(f) : f()
+
+        // updateStep(3);
+    </script>
+
+</body>

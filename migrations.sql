@@ -1,4 +1,12 @@
 
+-- Table Definition
+CREATE TABLE logins (
+    id uuid PRIMARY KEY NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE tokens (
     id	UUID PRIMARY KEY,
     user_id	UUID REFERENCES users(id),

@@ -8,21 +8,28 @@
 <body>
     {{template "nav-public" .}}
     <main>
-        <div class="blue-section center" style="padding: 150px 0px">
+        <div class="blue-section center" style="padding: 150px 20px">
             <div class="section-content">
-                <img src="{{.Props.Static}}/images/app/landing-squiggle-smile.png"
+                <img class="show-on-large" src="{{.Props.Static}}/images/app/landing-squiggle-smile.png"
                     style="position: absolute; top: 70px; left: 140px; width: 50px;" />
-                <img src="{{.Props.Static}}/images/app/landing-squiggle-line.png"
+                <img class="show-on-large" src="{{.Props.Static}}/images/app/landing-squiggle-line.png"
                     style="position: absolute; top: 150px; right: 100px; width: 200px;" />
 
                 <img src="{{.Props.Static}}/images/app/logo-2.png" alt="logo" class="" />
-                <h1 class="view-row-alt">ENKALRE OCH SNABBARE ATT HITTA LÄXHJÄLP!</h1>
+                <h1 class="view-row-alt">ENKLARE OCH SNABBARE ATT HITTA LÄXHJÄLP!</h1>
                 <p class="view-row opacity-70">Här hittar du lämplig studiecoach som du själv valt ut, utan
                     mellanhänder.</p>
 
                 <div class="flex gap-32 view-row-alt">
-                    <button class="view-btn view-btn-white view-btn-extra-wide">Skapa konto</button>
-                    <button class="view-btn view-btn-alt view-btn-white-fill view-btn-extra-wide">Logga in</button>
+
+                    <div class="flex f-right gap-32">
+                        <a href="/signup" class="view-btn view-btn-white view-btn-extra-wide">
+                            <span>Skapa konto</span>
+                        </a>
+                        <a href="/auth/login" class="view-btn view-btn-alt view-btn-white-fill view-btn-extra-wide">
+                            <span>Logga in</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,7 +58,7 @@
 
         <div class="blue-section center" style="padding: 80px 0px">
             <div class="section-content">
-                <img style="position: absolute; top: -50px; left: 110px; width: 120px;"
+                <img class="show-on-large" style="position: absolute; top: -50px; left: 110px; width: 120px;"
                     src="{{.Props.Static}}/images/app/landing-squiggle-arrow.png">
                 <h1>Några ämnen vi erbjuder läxhjälp inom</h1>
 

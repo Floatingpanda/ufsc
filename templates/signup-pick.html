@@ -2,82 +2,36 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Up For School - {{.Data.Title}}</title>
-    <link rel="icon" href="{{.Props.Static}}/images/app/icon-48x48.png">
-    <link rel="apple-touch-icon" href="{{.Props.Static}}images/app/apple-touch-icon.png">
-    <link rel="stylesheet" href="{{.Props.Static}}/style.css">
+    {{ template "head" . }}
 </head>
 
 <body>
     {{template "nav-public" .}}
 
-    <div class="page-container green">
 
-        <div class="group">
-            <div class="main">
+    <div class="light-section" style="height: calc(100vh - 100px);">
+        <div class="flex-rows flex gap-32 color-primary view-center" style="padding: 100px 0px;">
 
-                <div class="signup-container">
-                    <div class="view-container">
-                        <a href="/signup?role=team">
-                            <div class="container">
-                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-team.jpg">
-                                <div class="view-container">
-                                    <h1 class="view-center">
-                                        {{if eq .Data.Lang "sv"}}
-                                        Registrera ert<br> lag
-                                        {{else}}
-                                        Register your<br> team
-                                        {{end}}
-                                    </h1>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+            <a href="/signup-student">
+                <div class="container blue-section pattern-section view-btn"
+                    style="width: 400px; height: 400px; border-radius: 10px;">
+                    <h1 class="view-center" style="padding: 60px">
+                        Elev
+                    </h1>
+                    <img src="{{.Props.Static}}/images/app/student-icon.png" alt="Elev" />
                 </div>
+            </a>
 
-                <div class="signup-container">
-                    <div class="view-container">
-                        <a href="/signup?role=referee">
-                            <div class="container">
-                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-referee.jpg">
-                                <div class="view-container">
-                                    <h1 class="view-center">
-                                        {{if eq .Data.Lang "sv"}}
-                                        Registrera dig<br>som domare
-                                        {{else}}
-                                        Register as a<br> referee
-                                        {{end}}
-                                    </h1>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+            <a href="/signup-tutor">
+                <div class="container blue-section pattern-section view-btn"
+                    style="width: 400px; height: 400px; border-radius: 10px;">
+                    <h1 class="view-center" style="padding: 60px">
+                        Studiecoach
+                    </h1>
                 </div>
+            </a>
 
-                <div class="signup-container">
-                    <div class="view-container">
-                        <a href="/signup?role=cup">
-                            <div class="container">
-                                <img class="img-fit signup-img" src="{{.Props.Static}}images/app/signup-cup.jpg">
-                                <div class="view-container">
-                                    <h1 class="view-center">
-                                        {{if eq .Data.Lang "sv"}}
-                                        Registrera dig<br>som cuparrangör
-                                        {{else}}
-                                        Register as a<br> cup organizer
-                                        {{end}}
-                                    </h1>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
-
     </div>
 
 </body>

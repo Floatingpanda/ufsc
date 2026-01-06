@@ -1,4 +1,4 @@
-{{define "nav-public"}}
+{{define "nav"}}
 
 <style>
     .bar1,
@@ -36,6 +36,25 @@
         padding-bottom: 40px;
         background-color: white;
     }
+
+    .nav-link {
+        color: black;
+        display: block;
+        padding: 5px 0px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .nav-link-active {
+        padding-bottom: 2px;
+        border-bottom: 2px solid #000;
+    }
+
+    .nav-link:hover {
+        padding-bottom: 2px;
+        border-bottom: 2px solid #000;
+    }
 </style>
 
 
@@ -52,20 +71,21 @@
     </div>
 
 
-    <div class="flex f-right gap-32 show-on-large">
-        <a href="/signup" class="view-btn view-btn-extra-wide m-16">
-            <span>Skapa konto</span>
-        </a>
-        <a href="/auth/login" class="view-btn view-btn-alt view-btn-wide m-16">
-            <span>Logga in</span>
-        </a>
+    <div class="show-on-large">
+        <div class="flex flex-row f-right gap-32">
+            <a href="/home" class="nav-link"> <span>Hem</span></a>
+            <a href="/tutors" class="nav-link"> <span>Hitta studiecoach</span></a>
+            <a href="/profile" class="nav-link"> <span>Min profil</span></a>
+        </div>
     </div>
 </div>
 
 
 <div id="small-nav-bar" style="display: none;" class="show-on-small flex-columns  small-nav-bar center">
-    <a href="/signup" class="bolder color-primary">Skapa konto</a>
-    <a href="/signin" class="bolder color-primary">Logga in</a>
+    <a href="/home" class="bolder color-primary">Hem</a>
+    <a href="/tutors" class="bolder color-primary">Hitta studiecoach</a>
+    <a href="/profile" class="bolder color-primary">Profil</a>
+
 </div>
 
 <script>
@@ -78,6 +98,19 @@
             smallNav.style.display = "none";
         }
     }
+
+    // Add active class to current page
+    (function () {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        navLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+            if (linkPath === currentPath) {
+                link.classList.add('nav-link-active');
+            }
+        });
+    })();
 </script>
 
 {{end}}

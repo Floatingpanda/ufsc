@@ -16,6 +16,10 @@ h6 {
     padding: 0;
 }
 
+a {
+    text-decoration: none;
+}
+
 p {
     font-size: 20px;
     margin: 5px 0px;
@@ -27,6 +31,27 @@ body {
     padding: 0;
 }
 
+.text-small {
+    font-size: 12px;
+}
+
+
+.text-medium {
+    font-size: 16px;
+}
+
+
+.text-strong {
+    font-weight: bold;
+}
+
+.text-light {
+    color: #626262;
+}
+
+.color-grey {
+    color: #888;
+}
 
 /* view */
 .view-center {
@@ -153,6 +178,23 @@ body {
     color: black
 }
 
+
+.view-btn-small {
+    font-family: "AvenirNext-DemiBold" !important;
+    background: transparent;
+    display: inline-block;
+    padding: 4px 40px;
+    font: inherit;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 25px;
+    transition: ease .3s;
+    cursor: pointer;
+    outline: none;
+}
+
+
+
 .view-btn-wide {
     padding: 10px 32px;
 }
@@ -182,6 +224,7 @@ a.view-btn {
 .view-btn:disabled {
     cursor: not-allowed;
     transform: scale(1);
+    opacity: 0.6;
 }
 
 .view-btn-sel {
@@ -234,6 +277,14 @@ a.view-btn {
     background-color: #40DB87;
 }
 
+.view-btn-green-alt {
+    color: var(--upforschool-primary);
+    border-color: #2EF0C0 !important;
+    background-color: #2EF0C0 !important;
+
+}
+
+
 .view-btn-green:disabled {
     background-color: #b3f1cf;
     border-color: #b3f1cf;
@@ -262,6 +313,7 @@ a.view-btn {
 
 .view-btn-white {
     border-color: #fff;
+
     color: #fff;
 }
 
@@ -315,14 +367,6 @@ a.view-btn {
     background-image: url("/static/images/app/upforschool-logo.png");
 }
 
-
-
-/* 
-
-
-
-*/
-
 .flex-between {
     display: flex;
     justify-content: space-between;
@@ -367,6 +411,18 @@ a.view-btn {
     padding: 32px;
 }
 
+.m-4 {
+    margin: 4px;
+}
+
+.m-8 {
+    margin: 8px;
+}
+
+.m-16 {
+    margin: 16px;
+}
+
 .italic {
     font-style: italic;
 }
@@ -394,6 +450,11 @@ a.view-btn {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
+}
+
+.full-page {
+    height: calc(100vh - 100px);
+    overflow: auto;
 }
 
 .flex {
@@ -497,10 +558,25 @@ a.view-btn {
     max-width: 600px;
 }
 
+.show-on-small {
+    display: none;
+}
+
+.show-on-large {
+    display: block;
+}
 
 /* Show the element only if screen width is below 600px */
 @media (max-width: 800px) {
     .hide-on-small {
+        display: none;
+    }
+
+    .show-on-small {
+        display: block;
+    }
+
+    .show-on-large {
         display: none;
     }
 }
@@ -508,7 +584,7 @@ a.view-btn {
 .form-label {
     text-align: left;
     display: block;
-    margin-top: 16px;
+    margin-top: 22px;
     margin-bottom: 4px;
 }
 
@@ -555,8 +631,6 @@ a.view-btn {
 .group-column-third:last-child {
     text-align: right;
 }
-
-
 
 .form-check-hidden {
     position: absolute;
@@ -714,4 +788,187 @@ a.view-btn {
     100% {
         transform: rotate(360deg);
     }
+}
+
+
+
+
+.step-arrow {
+    background-image: url('/static/images/app/step-arrow.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: contain;
+    background-size: contain;
+    width: 40px;
+    padding: 7px 2px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--upforschool-primary);
+    font-weight: bolder;
+}
+
+.step-arrow-active {
+    background-image: url('/static/images/app/step-arrow-active.png')
+}
+
+
+.step-arrow-white {
+    background-image: url('/static/images/app/step-arrow-white.png')
+}
+
+
+.back-button {
+    background-repeat: no-repeat;
+    object-fit: contain;
+    background-size: contain;
+    background-image: url('/static/images/app/back-button.png');
+    width: 40px;
+    padding: 7px 2px;
+    top: 16px;
+    left: 16px;
+    cursor: pointer;
+}
+
+/* Steps animation*/
+
+.step {
+    display: none;
+    padding: 16px;
+    /* min-height: 550px; */
+    height: 550px;
+    overflow: scroll;
+}
+
+.step.active {
+    display: block;
+}
+
+.step-content {
+    margin-top: 40px;
+}
+
+
+
+
+/* Forward transitions (default) */
+::view-transition-old(step-right) {
+    animation: slide-out-left 0.2s ease-out forwards;
+}
+
+::view-transition-new(step-right) {
+    animation: slide-in-right 0.2s ease-out forwards;
+}
+
+/* Back transitions - slide the opposite direction */
+::view-transition-old(step-left) {
+    animation: slide-out-right 0.2s ease-out forwards;
+}
+
+::view-transition-new(step-left) {
+    animation: slide-in-left 0.2s ease-out forwards;
+}
+
+
+.header-squiggle {
+    position: relative;
+    margin: auto;
+    height: 70px;
+    width: 400px;
+    background-image: url('/static/images/app/squiggle-header.png');
+    background-repeat: no-repeat;
+}
+
+@keyframes slide-out-left {
+    from {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+
+    to {
+        transform: translateX(-100px);
+        opacity: 0%;
+    }
+}
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100px);
+        opacity: 0%;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes slide-out-right {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+}
+
+@keyframes slide-in-left {
+    from {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+
+
+.list-image {
+    position: absolute;
+    top: -50px;
+    left: 30px;
+    width: 100px;
+    height: 100px;
+    background-color: #ddd;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+.list-image-badge {
+    height: 40px;
+    width: 40px;
+    left: -60px;
+    bottom: 12px;
+}
+
+.card-profile {
+    width: 160px;
+    height: 180px;
+    margin-top: 30px;
+    position: relative;
+    padding-top: 55px;
+    box-sizing: border-box;
+    border: 1px solid t#eee;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    background-color: #fff;
+}
+
+
+.fade-container {
+    overflow: hidden;
+
+    mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 95%,
+            rgba(0, 0, 0, 0) 100%);
+
+    -webkit-mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 95%,
+            rgba(0, 0, 0, 0) 100%);
 }

@@ -21,14 +21,14 @@ func NewCore(db *sqlx.DB) *Core {
 	}
 }
 
-func (c *Core) UpdateCookieConsent(accountID, answer string) error {
+func (c *Core) UpdateCookieConsent(userID, answer string) error {
 	query := `
-    UPDATE accounts
+    UPDATE users
        SET cookie_consent = $2,
            cookie_consent_at = CURRENT_TIMESTAMP
      WHERE id = $1`
 
-	_, err := c.db.Exec(query, accountID, answer)
+	_, err := c.db.Exec(query, userID, answer)
 	return err
 }
 

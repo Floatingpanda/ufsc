@@ -22,9 +22,6 @@ func loadTemplatesDev() *template.Template {
 
 var templates *template.Template
 
-// PageData represents the data passed to templates
-type PageData struct{}
-
 func init() {
 	env := os.Getenv("MODE")
 

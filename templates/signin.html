@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{ template "head" . }}
+
+</head>
+
+<body>
+    {{template "nav-public" .Name}}
+
+
+
+
+
+    <div class="split-page ">
+        <div class="hide-on-small blue-section pattern-section center"
+            style="height: calc(100vh - 100px); position: sticky; top: 100px;">
+            <h1>Logga in</h1>
+        </div>
+
+
+        <div class="split-page-right">
+            <div class="view-container container">
+
+                <h3 style="text-align: center;">Här loggar du in om du är elev</h3>
+
+                {{if eq .Data.Error "ssn_not_found" }}
+                <div class="message view-row">
+                    <p>Ingen användare med personnummer hittades</p>
+                </div>
+                {{ else if .Data.Error}}
+                <div class="message view-row">
+                    <p>Fel användarnamn eller lösenord</p>
+                </div>
+                {{end}}
+
+                <form name="signinForm" action="/auth/login" method="post">
+                    <label class="form-label" for="username">Email</label>
+                    <input class="form-input" type="text" name="username">
+
+                    <label class="form-label" for="password">Lösenord</label>
+                    <div style="position: relative;">
+                        <input class="form-input" type="password" name="password" id="password">
+                        <img id="togglePassword" src="{{.Props.Static}}/images/app/pw-show.png" alt="Show Password"
+                            style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; width: 20px; height: 20px;">
+                    </div>
+
+                    <p class="text-small color-grey">Glömt lösenord? <a class="color-grey" href="/forgot">Skapa nytt
+                            här.</a> Inget konto?
+                        <a class="color-grey" href="/signup">Registrera dig här.</a> Frågor? <a class="color-grey"
+                            href="mailto:hej@upforschool.se?subject=Inloggning">Kontakta oss</a>.
+                    </p>
+
+                    <div class="view-row view-center">
+                        <button class="view-btn view-btn-alt view-btn-extra-wide" id="button">Nästa</button>
+                    </div>
+
+                    <input type="hidden" id="bid-token" name="bid-token">
+                </form>
+            </div>
+
+            <!-- QR-kod modal -->
+            <div id="bankid-modal" style="display: none" name="overlay">
+                <div class="overlay view-center">
+                    <div class="overlay-inner flex-columns flex gap-8">
+                        <img src="{{.Props.Static}}/images/app/bankid_logo.png" alt="BankID"
+                            style="width: 150px; height: 150px; display: block; object-fit: cover;">
+
+                        <!-- QR-kod -->
+                        <img style="display: none; margin-bottom: 20px" id="qr-code"></img>
+
+                        <!-- Spinner -->
+                        <div id="bankid-spinner" style="width: 200px; text-align: center; display: none;">
+                            <p>Öppna BankID-appen</p>
+                            <div class="spinner"></div>
+                        </div>
+
+                        <button id="bankid-modal-cancel" class="view-btn" style=" margin-bottom: 20px"
+                            id="close-bankid-modal">Avbryt</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-container">
+
+
+                <h3 style="text-align: center;">Här loggar du in om du är Studiecoach</h3>
+                <!-- BankID options -->
+                <div class="view-pad view-row">
+                    <div id="bankid-options" class="center">
+                        <button class="view-btn" style="padding-left: 20px; padding-right: 20px; width:300px"
+                            id="bankid-same-device-button">Öppna BankID på denna enhet</button>
+                        <p class="view-row bolder">Eller</p>
+                        <button class="view-row view-btn view-btn-alt" style="width:300px" id="bankid-button">Visa
+                            QR-kod</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { startBankidAuth, cancelBankidAuth, startPollingResult, startPollingQRCode } from '{{.Props.Static}}/bankid.js';
+
+        let bankidModalEl = document.getElementById('bankid-modal')
+        let bankidSpinnerEl = document.getElementById('bankid-spinner')
+        let bankidModalCancelEl = document.getElementById('bankid-modal-cancel')
+        let qrCodeEl = document.getElementById('qr-code')
+
+        let orderRef
+        bankidModalCancelEl.addEventListener('click', () => {
+            if (!orderRef) return
+
+            cancelBankidAuth(orderRef)
+            bankidSpinnerEl.style.display = "none";
+            bankidModalEl.style.display = "none";
+            qrCodeEl.style.display = "none";
+        })
+
+        let onComplete = (data) => {
+            document.getElementById("bid-token").value = data.token
+            document.signinForm.submit()
+        }
+
+        let onTimeout = (data) => {
+            bankidSpinnerEl.style.display = "none";
+            bankidModalEl.style.display = "none";
+            qrCodeEl.style.display = "none";
+        }
+
+        let onNewQRCode = (url) => {
+            bankidModalEl.style.display = "block"
+            bankidSpinnerEl.style.display = "none";
+            qrCodeEl.style.display = "block"
+            qrCodeEl.src = url;
+        }
+        document.getElementById('bankid-button').addEventListener('click', async () => {
+            let openBankIDApp = false
+            orderRef = await startBankidAuth(openBankIDApp)
+            startPollingQRCode(orderRef, onNewQRCode, onComplete, onTimeout);
+        })
+
+        document.getElementById('bankid-same-device-button').addEventListener('click', async () => {
+            let openBankIDApp = true
+            orderRef = await startBankidAuth(openBankIDApp)
+            startPollingResult(orderRef, onComplete);
+
+            qrCodeEl.style.display = "none"
+            bankidSpinnerEl.style.display = "block";
+            bankidModalEl.style.display = "block"
+
+        })
+
+
+        let ip = ""
+        let self = this
+        fetch('https://api.ipify.org?format=json')
+            .then(async response => {
+                const ipinfo = await response.json();
+                ip = ipinfo.ip
+            })
+            .catch(e => {
+                console.log("Failed to get ip from ipify.org", e)
+            })
+
+        // document.getElementById("bankid-btn").addEventListener("click", () => {
+
+        //     let ssn = document.getElementById("bid-ssn").value
+
+        //     // Specify the backend endpoint and HTTP request details
+        //     const data = {"ssn": ssn, "ip":ip}
+
+
+        //     // Send a POST request using fetch
+        //     fetch("/bid/tokenize", {
+        //         method: "POST", // or "GET", "PUT", "DELETE", etc.
+        //         headers: {
+        //             "Content-Type": "application/json", // Specify the content type
+        //         },
+        //         body: JSON.stringify(data), // Convert the data to JSON string
+        //     })
+        //     .then((response) => {
+        //         if (!response.ok) {
+        //             throw new Error(`HTTP error! status: ${response.status}`);
+        //         }
+        //         return response.json(); // Parse the JSON response
+        //     })
+        //     .then((data) => {
+        //         console.log("Response from server:", data);
+
+        //         document.getElementById("bid-token").value = data.token
+        //         document.signinForm.submit()
+        //     })
+        //     .catch((error) => {
+        //         console.error("Error:", error);
+        //     });
+        // });
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('password');
+            const isPassword = passwordField.type === 'password';
+            passwordField.type = isPassword ? 'text' : 'password';
+            this.src = isPassword ? '{{.Props.Static}}/images/app/pw-hidden.png' : '{{.Props.Static}}/images/app/pw-show.png';
+            this.alt = isPassword ? 'Hide Password' : 'Show Password';
+        });
+    </script>
+    <!-- <script>
+        document.getElementById("button").disabled = true;
+        document.getElementById("approve").addEventListener("change", function() {
+            document.getElementById("button").disabled = !this.checked;
+        });
+    </script> -->
+
+</body>
+
+</html>

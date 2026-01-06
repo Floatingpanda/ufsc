@@ -79,3 +79,63 @@ func (r *Repository) Locations() ([]Location, error) {
 
 	return result, nil
 }
+
+func (r *Repository) AllTutors() ([]TutorView, error) {
+	query := `
+		SELECT 
+			t.id,
+			t.user_id,
+			t.image,
+			t.location_id,
+			t.online_lessons,
+			t.description,
+			first_name,
+			u.last_name,
+			u.email,
+			u.phone,
+			u.sms_opt_in,
+			u.status
+		FROM users AS u
+		LEFT JOIN tutors AS t ON t.user_id = u.id
+		WHERE u.status = 'CONFIRMED'
+	`
+	var result []TutorView
+	if err := r.db.Select(&result, query); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *Repository) Tutors(online_lessons bool, locationID, subjectID, levelID int) ([]TutorView, error) {
+	query := `
+			SELECT 
+			t.id,
+			t.user_id,
+			t.image,
+			t.location_id,
+			t.online_lessons,
+			t.description,
+			first_name,
+			u.last_name,
+			u.email,
+			u.phone,
+			u.sms_opt_in,
+			u.status
+		FROM users AS u
+		LEFT JOIN tutors AS t ON t.user_id = u.id
+		JOIN tutor_levels l ON t.id = l.tutor_id
+		JOIN tutor_subjects s ON t.id = s.tutor_id
+		WHERE u.status = 'CONFIRMED'
+		AND ((t.online_lessons AND $1) OR t.location_id = $2) 
+		AND s.subject_id = $3
+		AND l.level_id = $4
+		
+	`
+	var result []TutorView
+	if err := r.db.Select(&result, query, online_lessons, locationID, subjectID, levelID); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

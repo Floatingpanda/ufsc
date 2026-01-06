@@ -49,8 +49,11 @@ func (a *App) routes() {
 	r := a.router
 
 	static := http.StripPrefix("/static/", http.FileServer(http.Dir("./static")))
+
 	r.HandleFunc("/static/", a.handleStatic(static))
-	r.HandleFunc("/", a.indexHandler)
+	r.HandleFunc("/", a.handleIsLoggedIn(a.indexHandler))
+
+	// a.router.HandleFunc("/home", a.handleAuth(a.handleHome()))
 
 	// bankid handlers
 	r.HandleFunc("/bankid/start", corsMiddleware(startAuthHandler))
@@ -58,8 +61,17 @@ func (a *App) routes() {
 	r.HandleFunc("/bankid/qrcode", corsMiddleware(generateQRHandler))
 	r.HandleFunc("/bankid/cancel", corsMiddleware(cancelAuthHandler))
 
-	r.HandleFunc("/signup", a.handleSignup())
-	a.router.HandleFunc("/auth/confirm/", a.handleConfirm())
+	r.HandleFunc("/auth/login", a.handleIsLoggedIn(a.handleLogin()))
+	r.HandleFunc("/auth/logout", a.handleLogout())
+
+	r.HandleFunc("/signup", a.page("signup-pick.html"))
+	r.HandleFunc("/signup-student", a.handleSignupStudent())
+	r.HandleFunc("/signup-tutor", a.handleSignupTutor())
+	r.HandleFunc("/auth/confirm/", a.handleConfirm())
+
+	r.HandleFunc("/tutors/request", a.handleAuth(a.handleTutorsRequest))
+
+	r.HandleFunc("GET /list/tutors", a.handleAuth(a.handleGetTutors))
 
 	r.HandleFunc("/home", a.handleAuth(a.homeHandler))
 }
