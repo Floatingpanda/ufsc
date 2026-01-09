@@ -3,6 +3,8 @@ package model
 import (
 	"fmt"
 	"io"
+	"log"
+	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/gofrs/uuid"
@@ -55,7 +57,7 @@ func (c *Core) updateImage(tutorID, image string) error {
 	return err
 }
 
-func (c *Core) AddTutor(tutor Tutor, subjects []string, levels []string) (string, error) {
+func (c *Core) AddTutor(tutor Tutor, locations []string, subjects []string, levels []string) (string, error) {
 
 	tx, err := c.db.Begin()
 	if err != nil {
@@ -64,12 +66,23 @@ func (c *Core) AddTutor(tutor Tutor, subjects []string, levels []string) (string
 
 	id := uuid.Must(uuid.NewV4())
 	query := `
-	INSERT INTO tutors (id, user_id, location_id, online_lessons, description, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-	_, err = tx.Exec(query, id, tutor.UserID, tutor.LocationID, tutor.OnlineLessons, tutor.Description)
+	INSERT INTO tutors (id, user_id, online_lessons, description, created_at, updated_at)
+		 VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+	_, err = tx.Exec(query, id, tutor.UserID, tutor.OnlineLessons, tutor.Description)
 	if err != nil {
 		tx.Rollback()
 		return "", fmt.Errorf("failed to add tutor %w", err)
+	}
+
+	for _, locationID := range locations {
+		query := `
+		INSERT INTO tutor_locations (tutor_id, location_id)
+			 VALUES ($1, $2)`
+		_, err = tx.Exec(query, id, locationID)
+		if err != nil {
+			tx.Rollback()
+			return "", fmt.Errorf("failed to add level %w", err)
+		}
 	}
 
 	for _, subjectID := range subjects {
@@ -97,4 +110,70 @@ func (c *Core) AddTutor(tutor Tutor, subjects []string, levels []string) (string
 	tx.Commit()
 	return id.String(), err
 
+}
+
+type LessonRequest struct {
+	SubjectID   string    `json:"subject"`
+	LevelID     string    `json:"level"`
+	LocationID  string    `json:"location"`
+	IsOnline    bool      `json:"isOnline"`
+	Tutors      []string  `json:"tutors"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	StartAt     time.Time `json:"startAt"`
+	Duration    int       `json:"duration"` // minutes
+}
+
+func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
+
+	r.StartAt = time.Now()
+
+	if r.LocationID == "online" {
+		r.LocationID = "-1"
+	}
+
+	log.Printf("%+v", r)
+	tx, err := c.db.Begin()
+	if err != nil {
+		return "", err
+	}
+
+	id := uuid.Must(uuid.NewV4())
+
+	query := `
+	INSERT INTO lessons (
+		id,
+		student_id,
+		subject_id,
+		level_id,
+		location_id,
+		online_lessson,
+		title,
+		description,
+		start_at
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	_, err = tx.Exec(query, id, userID, r.SubjectID, r.LevelID, r.LocationID, r.IsOnline, r.Title, r.Description, r.StartAt)
+	if err != nil {
+		tx.Rollback()
+		return "", fmt.Errorf("failed to add lesson %w", err)
+	}
+
+	for _, tutorID := range r.Tutors {
+		query := `
+		INSERT INTO lesson_requests (lesson_id, tutor_id, status, created_at, updated_at)
+			 VALUES ($1, $2, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+		_, err = tx.Exec(query, id, tutorID)
+		if err != nil {
+			tx.Rollback()
+			return "", fmt.Errorf("failed to add lesson request %w", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+
+	return id.String(), nil
 }

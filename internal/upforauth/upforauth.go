@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 	"strconv"
 	"strings"
@@ -102,6 +103,7 @@ func (s *Service) Login(username, password string) (string, error) {
 	username = strings.TrimSpace(strings.ToLower(username))
 
 	if len(username) == 0 || len(password) == 0 || !strings.Contains(username, "@") {
+		log.Println("-1")
 		return emptyID, errors.New("unauthented")
 	}
 
@@ -112,28 +114,34 @@ func (s *Service) Login(username, password string) (string, error) {
 
 	var u user
 	if err := s.db.Get(&u, query, username); err != nil {
+		log.Println("-1")
 		return emptyID, fmt.Errorf("unauthenticated: %w", err)
 	}
 
 	if len(u.Password) == 0 {
+		log.Println("-2")
 		return emptyID, errors.New("unauthented")
 	}
 
 	if u.Status != "CONFIRMED" {
+		log.Println("-3")
 		return emptyID, errors.New("unauthenticated: not confirmed")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+		log.Println("-4")
 		return emptyID, fmt.Errorf("unauthenticated: %w", err)
 	}
 
 	loginID, err := uuid.NewV4()
 	if err != nil {
+		log.Println("-5")
 		return emptyID, fmt.Errorf("unauthenticated: %w", err)
 	}
 
 	insert := "INSERT INTO logins (id, user_id) VALUES($1, $2);"
 	if _, err := s.db.Exec(insert, loginID, u.ID); err != nil {
+		log.Println("-6")
 		return emptyID, fmt.Errorf("unauthenticated: %w", err)
 	}
 

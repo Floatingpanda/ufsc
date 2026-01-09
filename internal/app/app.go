@@ -69,7 +69,9 @@ func (a *App) routes() {
 	r.HandleFunc("/signup-tutor", a.handleSignupTutor())
 	r.HandleFunc("/auth/confirm/", a.handleConfirm())
 
-	r.HandleFunc("/tutors/request", a.handleAuth(a.handleTutorsRequest))
+	r.HandleFunc("/profile", a.handleAuth(a.handleProfile))
+
+	r.HandleFunc("/lessons/new", a.handleAuth(a.handleNewLesson))
 
 	r.HandleFunc("GET /list/tutors", a.handleAuth(a.handleGetTutors))
 

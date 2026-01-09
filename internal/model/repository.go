@@ -109,11 +109,10 @@ func (r *Repository) AllTutors() ([]TutorView, error) {
 
 func (r *Repository) Tutors(online_lessons bool, locationID, subjectID, levelID int) ([]TutorView, error) {
 	query := `
-			SELECT 
+		SELECT DISTINCT
 			t.id,
 			t.user_id,
 			t.image,
-			t.location_id,
 			t.online_lessons,
 			t.description,
 			first_name,
@@ -123,11 +122,12 @@ func (r *Repository) Tutors(online_lessons bool, locationID, subjectID, levelID 
 			u.sms_opt_in,
 			u.status
 		FROM users AS u
-		LEFT JOIN tutors AS t ON t.user_id = u.id
+		JOIN tutors AS t ON t.user_id = u.id
+		LEFT JOIN tutor_locations loc ON t.id = loc.tutor_id
 		JOIN tutor_levels l ON t.id = l.tutor_id
 		JOIN tutor_subjects s ON t.id = s.tutor_id
 		WHERE u.status = 'CONFIRMED'
-		AND ((t.online_lessons AND $1) OR t.location_id = $2) 
+		AND ((t.online_lessons AND $1) OR loc.location_id = $2) 
 		AND s.subject_id = $3
 		AND l.level_id = $4
 		

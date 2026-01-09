@@ -19,14 +19,14 @@
 <body>
 
     {{template "nav" .Name}}
-    <div class="full-page blue-section">
-        <div class="view-container">
-            <div id="step-container" class="step-right center container fade-container">
+    <div class="full-page blue-section ">
+        <div class="view-container ">
+            <div id="step-container" class="step-right center container centered-page ">
                 <!-- step 1 -->
                 <div id="step-1" class="view-row step active">
                     {{ template "tutor-request-header" "Vilket ämne behöver du hjälp med?" }}
 
-                    <div class="view-row-alt step-content">
+                    <div class="view-row-alt step-content fade-container">
                         <div style="max-width: 600px" class="container">
                             <div class="flex gap-16">
                                 {{ range .Data.Subjects }}
@@ -59,7 +59,7 @@
                 <div id="step-3" class="view-row step">
                     {{ template "tutor-request-header" "Online eller fysisk hjälp?" }}
 
-                    <div class="view-row-alt step-content">
+                    <div class="fade-container view-row-alt step-content ">
                         <div style="max-width: 600px; " class="container">
                             <div class="flex gap-16">
                                 <button onclick="selectLocation(event, 'online')" style="width: 180px;"
@@ -77,40 +77,63 @@
                 <div id="step-4" class="view-row step">
                     {{ template "tutor-request-header" "Välj Studiecoach" }}
 
-                    <div id="tutors-container" class="view-container flex step-content" hx-get="/list/tutors"
-                        hx-trigger="loadTutors" hx-target="this" hx-swap="innerHTML"
-                        class="view-container flex step-content">
-                        <!-- {{ range .Data.Tutors }}
-                        <div class="m-8">
-
-                            <div class="card-profile">
-                                <img class="list-image" class="list-image"
-                                    src="{{$.Props.Static}}/images/tutors/{{.Image}}" />
-
-                                <div class="m-8">
-                                    <p class="text-medium color-black text-strong"><strong>{{.FirstName}}</strong></p>
-                                    <p class="text-light text-small">0 bokade pass</p>
-                                </div>
-                                <button style="color: grey; border-color: grey;"
-                                    class="m-4 text-light view-btn view-btn-small">Välj</button>
-                                <p class="m-4 text-light text-medium">läs mer</p>
-                            </div>
-                        </div>
-                        {{ end }} -->
-
-
+                    <div id="tutors-container" hx-get="/list/tutors" hx-trigger="loadTutors" hx-target="this"
+                        hx-swap="innerHTML" class="step-content fade-container">
                     </div>
                 </div>
-                <div id="step-5" class="view-row step">5;
+
+                <!-- step 5 -->
+                <div id="step-5" class="view-row step">
+                    {{ template "tutor-request-header" "Information om lektionen" }}
+
+                    <div class="view-row-alt step-content">
+
+                        <input style="width: 600px; max-width: 80%;" class="view-text-input text-box"
+                            onkeyup="tutorRequest.title=this.value; validateStep()"
+                            onchange="tutorRequest.title=this.value; validateStep()" id="title" type="text"
+                            placeholder="Rubrik">
+
+                        <textarea style="width: 600px; max-width: 80%; height: 200px;"
+                            onkeyup="tutorRequest.description = this.value; validateStep()"
+                            onchange="tutorRequest.description = this.value; validateStep()" id="description"
+                            class="view-row-alt view-text-input text-box" style="height: 150px" placeholder="Här skriver du all information som studiecoachen behöver veta om lektionen. 
+
+Exempelvis: Beskrivning av elevens ålder, årskurs, etc
+Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig information." type="text-area"></textarea>
+                    </div>
                 </div>
-                <div id="step-6" class="view-row step">6</div>
-                <div id="step-7" class="view-row step">7</div>
+
+                <!-- step 6 -->
+                <div id="step-6" class="view-row step">
+                    {{ template "tutor-request-header" "Kontrollera information" }}
+
+                    <div class="step-content">
+                        <div class="text-box info-box">
+                            <p class=" text-medium">Hjälp med: <span id="preview-subject"></span></p>
+                            <p class="text-medium">Nivå: <span id="preview-level"></span></p>
+                            <p class="text-medium">Var: <span id="preview-location"></span></p>
+                            <br>
+                            <p class="text-medium" id="preview-title"></p>
+                            <br>
+                            <p class="text-medium opacity-70" id="preview-description"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- step 7  -->
+                <div id="step-7" class="view-row step">
+                    <div class="step-content">
+                        <h1>Betal Steg</h1>
+                    </div>
+                </div>
             </div>
 
-            <div class="view-row-alt">
+            <div id="buttons" class="view-row-alt">
                 <div class="flex flex-row m-16 gap-16">
-                    <div id="back-button" class="back-button"></div>
+                    <div id="back-button" class="back-button hidden"></div>
                     <button id="next-button" class="view-btn view-btn-white-fill view-btn-wide" disabled>Nästa</button>
+                    <button id="send-button" onclick="createLessonRequest(event, 'online')"
+                        class="view-btn view-btn-white-fill view-btn-wide hidden">Skicka</button>
                 </div>
             </div>
 
@@ -139,17 +162,25 @@
             level: -1,
             location: -1,
             isOnline: false,
+            tutors: [],
+            title: "",
             description: "",
-            dateTime: null,
+            startAt: null,
             duration: null,
-            studentName: null,
-            contactInfo: null
+        }
+
+        let preview = {
+            subject: "",
+            level: "",
+            location: ""
         }
 
         let stepArrows = document.querySelectorAll('.step-arrow');
+        let buttons = document.getElementById('buttons');
         let stepper = document.getElementById('step-container');
-        let nextButton = document.getElementById('next-button');
         let backButton = document.getElementById('back-button');
+        let nextButton = document.getElementById('next-button');
+        let sendButton = document.getElementById('send-button');
         let steps = document.querySelectorAll('.step');
 
 
@@ -160,6 +191,7 @@
             tutorRequest.subject = subject;
             subjects.forEach(s => s.classList.remove('view-btn-green-alt'));
             e.target.classList.toggle('view-btn-green-alt');
+            preview.subject = e.target.innerText;
             validateStep();
         }
 
@@ -168,6 +200,7 @@
             tutorRequest.level = turnOff ? -1 : level;
             levels.forEach(lv => lv.classList.remove('view-btn-green-alt'));
             turnOff ? e.target.classList.remove('view-btn-green-alt') : e.target.classList.add('view-btn-green-alt');
+            preview.level = e.target.innerText;
             validateStep();
         }
 
@@ -177,12 +210,23 @@
             let locations = document.querySelectorAll('.location');
             locations.forEach(l => l.classList.remove('view-btn-green-alt'));
             e.target.classList.add('view-btn-green-alt');
+            preview.location = e.target.innerText;
+            validateStep();
+        }
+
+        function toggleTutor(e, tutorID) {
+            let select = tutorRequest.tutors.includes(tutorID);
+            let t = tutorRequest.tutors;
+            t.includes(tutorID) ? tutorRequest.tutors = t.filter(id => id !== tutorID) : t.push(tutorID);
+            e.target.classList.toggle('view-btn-green-sel');
+            select ? e.target.innerText = "Välj" : e.target.innerText = "Vald";
             validateStep();
         }
 
         nextButton.onclick = () => {
             stepper.style.viewTransitionName = 'step-right';
             if (step === 3) fetchTutors();
+            if (step === 5) updatePreview();
             if (step < 7) tryViewTransition(() => updateStep(1));
         };
 
@@ -203,49 +247,71 @@
             );
 
             htmx.trigger("#tutors-container", "loadTutors")
-
         }
 
-        function fetchTutors2() {
-            axios.get('/api/tutors', {
-                params: {
-                    online_lessions: tutorRequest.isOnline ? "TRUE" : "FALSE",
-                    subject: tutorRequest.subject,
-                    level: tutorRequest.level,
-                    location: tutorRequest.location
-                }
-            }).then(response => {
-                console.log("Tutors:", response.data);
-            }).catch(error => {
-                console.error("Error fetching tutors:", error);
-            });
+        function updatePreview() {
+            document.getElementById("preview-subject").innerText = preview.subject;
+            document.getElementById("preview-level").innerText = preview.level;
+            let locationName = tutorRequest.isOnline ? "Online" : preview.location;
+            document.getElementById("preview-location").innerText = locationName;
+            document.getElementById("preview-title").innerText = tutorRequest.title;
+            document.getElementById("preview-description").innerText = tutorRequest.description;
         }
+
 
         function validateStep() {
             let isValid = false;
             if (step === 1) isValid = tutorRequest.subject !== -1;
             if (step === 2) isValid = tutorRequest.level !== -1;
             if (step === 3) isValid = tutorRequest.location !== -1;
+            if (step === 4) isValid = tutorRequest.tutors.length > 0;
+            if (step === 5) isValid = tutorRequest.title.length > 0 && tutorRequest.description.length > 0;
+            if (step === 6) isValid = true
 
             nextButton.disabled = !isValid;
         }
 
         function updateStep(direction) {
             step += direction;
-            console.log("step", step);
             const idx = step - 1
             stepArrows[idx - direction].classList.remove('step-arrow-active');
             stepArrows[idx].classList.add('step-arrow-active');
             stepArrows[idx].classList.remove('step-arrow-white');
             if (step > 1) stepArrows[idx - 1].classList.add('step-arrow-white');
+            backButton.classList.toggle('hidden', step === 1);
+            console.log(step, step === 7, sendButton);
+            if (step === 7) { nextButton.classList.add('hidden'); sendButton.classList.remove('hidden'); }
+            if (step !== 7) { nextButton.classList.remove('hidden'); sendButton.classList.add('hidden'); }
 
             steps.forEach((s, index) => (index === idx) ? s.classList.add('active') : s.classList.remove('active'));
             validateStep();
         }
 
+        function createLessonRequest() {
+            fetch('/lessons/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tutorRequest),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/home'; // Redirect to home or another page
+
+                        window.location.href = '/home&lesson=' + response.lessonID;
+                    } else {
+                        alert('Ett fel uppstod vid skickandet av förfrågan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ett fel uppstod vid skickandet av förfrågan.');
+                });
+        }
+
         let tryViewTransition = (f) => document.startViewTransition ? document.startViewTransition(f) : f()
 
-        // updateStep(3);
     </script>
 
 </body>

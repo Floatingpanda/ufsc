@@ -1,18 +1,21 @@
 {{ if not .Data.Tutors }}
-<p class="">Inga studiecoacher för dina val hittades</p>
+<p>Inga studiecoacher för dina val hittades</p>
 {{ end }}
 
-{{ range .Data.Tutors }}
-<div class="m-8">
-    <div class="card-profile">
-        <img class="list-image" class="list-image" src="{{$.Props.Static}}/images/tutors/{{.Image}}" />
+<div class="view-container flex">
+    {{ range .Data.Tutors }}
+    <div class="m-8">
+        <div class="card-profile">
+            <img class="list-image" class="list-image" src="{{$.Props.Static}}/images/tutors/{{.Image}}" />
 
-        <div class="m-8">
-            <p class="text-medium color-black text-strong"><strong>{{.FirstName}}</strong></p>
-            <p class="text-light text-small">0 bokade pass</p>
+            <div class="m-8">
+                <p class="text-medium color-black text-strong"><strong>{{.FirstName}}</strong></p>
+                <p class="text-light text-small">0 bokade pass</p>
+            </div>
+            <button onclick="toggleTutor(event, {{.ID}})" style="color: grey; border-color: grey;"
+                class="m-4 text-light view-btn view-btn-small">Välj</button>
+            <p class="m-4 text-light text-medium text-underline">läs mer</p>
         </div>
-        <button style="color: grey; border-color: grey;" class="m-4 text-light view-btn view-btn-small">Välj</button>
-        <p class="m-4 text-light text-medium">läs mer</p>
     </div>
+    {{ end }}
 </div>
-{{ end }}

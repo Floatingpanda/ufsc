@@ -1,7 +1,35 @@
 {{define "footer"}}
+<div class="footer footer-compact">
+    <div class="main">
+        <div class="footer-flex">
+            <div class="footer-flex-item">
+                <a class="footer-link" href="/faq">FAQ</a>
+                <a class="footer-link" href="/terms">Terms and conditions</a>
+                <a class="footer-link" href="/policy">Privacy policy</a>
+                <a class="footer-link" href="/cookies">Cookie policy</a>
+                <a class="footer-link" href="https://www.upforschool.se/">Up For School</a>
+            </div>
+        </div>
 
-<footer class="site-footer">
-    <p>&copy; 2025 Up For School. All rights reserved.</p>
-</footer>
+    </div>
+</div>
 
+<div class="footer footer-full">
+    <div class="main">
+        <div class="footer-flex">
+            <div class="footer-flex-item">
+                <img class="footer-logo" src="{{.Props.Static}}/images/app/logo.png">
+                src="{{.Props.Static}}/images/app/pep-white.png"></a>
+            </div>
+
+            <div class="footer-flex-item">
+                <a class="footer-link" href="/faq">FAQ</a>
+                <a class="footer-link" href="/terms">Terms and conditions</a>
+                <a class="footer-link" href="/policy">Privacy policy</a>
+                <a class="footer-link" href="/cookies">Cookie policy</a>
+                <a class="footer-link" href="https://www.upforschool.se/">Up For School</a>
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}

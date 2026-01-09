@@ -49,6 +49,10 @@ body {
     color: #626262;
 }
 
+.text-underline {
+    text-decoration: underline;
+}
+
 .color-grey {
     color: #888;
 }
@@ -162,6 +166,35 @@ body {
     position: absolute;
     z-index: -1;
 }
+
+.view-text-input {
+    cursor: pointer;
+    outline: none;
+    color: white;
+}
+
+.view-text-input::placeholder {
+    opacity: 0.6;
+    color: white;
+}
+
+.text-box {
+    font-family: inherit;
+    border-radius: 20px;
+    background: transparent;
+    border: 2px solid white;
+    padding: 16px 20px;
+    text-align: left;
+    color: white;
+
+}
+
+.info-box {
+    font-family: "AvenirNext-DemiBold" !important;
+    overflow: scroll;
+}
+
+
 
 .view-btn {
     font-family: "AvenirNext-DemiBold" !important;
@@ -278,11 +311,16 @@ a.view-btn {
 }
 
 .view-btn-green-alt {
-    color: var(--upforschool-primary);
     border-color: #2EF0C0 !important;
     background-color: #2EF0C0 !important;
-
 }
+
+.view-btn-green-sel {
+    color: var(--upforschool-primary) !important;
+    border-color: #2EF0C0 !important;
+    background-color: #2EF0C0 !important;
+}
+
 
 
 .view-btn-green:disabled {
@@ -455,6 +493,10 @@ a.view-btn {
 .full-page {
     height: calc(100vh - 100px);
     overflow: auto;
+}
+
+.centered-page {
+    max-width: 800px;
 }
 
 .flex {
@@ -833,10 +875,9 @@ a.view-btn {
 
 .step {
     display: none;
-    padding: 16px;
+    /* padding: 16px; */
     /* min-height: 550px; */
-    height: 550px;
-    overflow: scroll;
+
 }
 
 .step.active {
@@ -845,6 +886,8 @@ a.view-btn {
 
 .step-content {
     margin-top: 40px;
+    height: 400px;
+    overflow: scroll;
 }
 
 
@@ -873,8 +916,22 @@ a.view-btn {
     position: relative;
     margin: auto;
     height: 70px;
-    width: 400px;
+    width: 378px;
     background-image: url('/static/images/app/squiggle-header.png');
+    background-repeat: no-repeat;
+}
+
+.header-squiggle2 {
+    color: var(--upforschool-primary);
+    position: relative;
+    font-weight: bolder;
+    font-size: 20px;
+    margin: auto;
+    padding-top: 30px;
+    text-decoration: underline;
+    height: 100px;
+    width: 380px;
+    background-image: url('/static/images/app/squiggle-header-2.png');
     background-repeat: no-repeat;
 }
 
@@ -962,7 +1019,7 @@ a.view-btn {
 
 
 .fade-container {
-    overflow: hidden;
+    overflow: scroll;
 
     mask-image: linear-gradient(to bottom,
             rgba(0, 0, 0, 1) 95%,
@@ -971,4 +1028,115 @@ a.view-btn {
     -webkit-mask-image: linear-gradient(to bottom,
             rgba(0, 0, 0, 1) 95%,
             rgba(0, 0, 0, 0) 100%);
+}
+
+
+
+
+/* overwrite choises */
+.choices__inner {
+    background-color: #fff;
+    border-radius: 8px;
+    min-height: 40px;
+    border: 2px solid #ddd;
+    box-sizing: border-box;
+}
+
+.choices__inner-alt {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    min-height: 30px;
+    border: 1px solid #fff;
+    padding: 7.5px 7.5px 3.75px;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.choices__input {
+    background-color: #fff;
+    font-size: 16px;
+    padding: 0;
+}
+
+.choices__list--multiple .choices__item {
+    background-color: #000;
+    border: 1px solid #000;
+}
+
+.choices__list--multiple .choices__item.is-highlighted {
+    background-color: #000;
+    border: 1px solid #000;
+}
+
+.choices[data-type*=select-multiple] .choices__button,
+.choices[data-type*=text] .choices__button {
+    border-left: 1px solid #fff;
+}
+
+.choices {
+    margin-bottom: 0;
+}
+
+
+.ads-container {
+    background-color: rgb(199, 199, 199);
+    margin: 40px 20px;
+    border-radius: 25px;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+/* footer */
+.footer {
+    background-color: #000;
+    color: #fff;
+    padding: 128px 16px 128px 16px;
+    line-height: 24px;
+}
+
+.footer-full {
+    display: none;
+}
+
+.footer-flex {
+    display: flex;
+    flex: 1;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    padding-top: 8px;
+}
+
+.footer-logo {
+    height: 80px;
+    margin-top: 100px;
+    margin-bottom: 32px;
+    display: block;
+}
+
+.footer-pep {
+    height: 30px;
+    display: block;
+}
+
+.footer a {
+    display: block;
+    color: #fff;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.border-white {
+    border-color: #fff;
 }

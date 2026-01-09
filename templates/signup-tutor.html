@@ -2,10 +2,11 @@
 <html lang="en">
 
 <head>
-    {{ template "head" . }}
-
     <link rel="stylesheet" href="{{.Props.Static}}/vendor/choices/choices.min.css" />
     <script src="{{.Props.Static}}/vendor/choices/choices.min.js"></script>
+
+    {{ template "head" . }}
+
 </head>
 
 <body>
@@ -42,7 +43,7 @@
                     <input id="confirm-email" name="confirm-email" type="email" class="form-input" required>
 
                     <label class="form-label bolder">Var är du verksam?</label>
-                    <select required name="location" id="select-locations" class="form-select form-input"
+                    <select multiple required name="locations" id="select-locations" class="form-select form-input "
                         name="locations">
                         {{ range .Data.Locations }}
                         <option value="{{.ID}}">{{.Name}}</option>
@@ -139,6 +140,14 @@ erfarenhet som studiecoach." required></textarea>
 
 
     <script>
+        let locationsEL = document.getElementById("select-locations")
+        new Choices(locationsEL, {
+            removeItemButton: true,
+            noResultsText: 'Inga platser att välja',
+            noChoicesText: 'Det finns inga fler platser att välja',
+            itemSelectText: 'Tryck för val'
+        });
+
         let image = document.getElementById("image");
         let imagePreview = document.getElementById("image-preview");
 

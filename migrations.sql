@@ -60,6 +60,11 @@ CREATE TABLE tutor_levels (
     PRIMARY KEY (tutor_id, level_id)
 );
 
+CREATE TABLE tutor_locations (
+    tutor_id	UUID REFERENCES tutors(id),
+    location_id	int REFERENCES locations(id),
+    PRIMARY KEY (tutor_id, location_id)
+);
 
 CREATE TABLE logins (
     id	UUID PRIMARY KEY,
@@ -95,7 +100,39 @@ CREATE TABLE levels (
 );
 
 
+CREATE TABLE lessons (
+    id UUID PRIMARY KEY,
+    student_id UUID REFERENCES users(id),
+    subject_id INT REFERENCES subjects(id),
+    level_id INT REFERENCES levels(id),
+    location_id INT REFERENCES locations(id),
+    online_lessson BOOLEAN NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    start_at TIMESTAMPTZ NOT NULL,
+    tutor_id UUID REFERENCES tutors(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
+CREATE TABLE lesson_requests (
+    id SERIAL PRIMARY KEY,
+    lesson_id UUID REFERENCES lessons(id),
+    tutor_id UUID REFERENCES tutors(id),
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE ratings (
+    id SERIAL PRIMARY KEY,
+    lesson_id UUID REFERENCES lessons(id),
+    tutor_id UUID REFERENCES tutors(id),
+    grade INT NOT NULL DEFAULT 0,
+    feedback TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 INSERT INTO LOCATIONS (id,name) values (1,	'Stockholm');
 INSERT INTO LOCATIONS (id,name) values (2,	'Göteborg');

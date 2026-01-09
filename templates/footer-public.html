@@ -1,0 +1,86 @@
+{{define "footer-public"}}
+<div class="footer footer-compact">
+    <div class="main">
+        <div class="footer-flex">
+            <div class="footer-flex-item">
+                <p><strong>{{if eq .Data.Lang "sv"}}Meny{{else}}Menu{{end}}</strong></p>
+                <a class="footer-link" href="/">{{if eq .Data.Lang "sv"}}Hem{{else}}Home{{end}}</a>
+                <a class="footer-link" href="/signup">{{if eq .Data.Lang "sv"}}Registrera dig{{else}}Register{{end}}</a>
+                <a class="footer-link" href="/auth/login">{{if eq .Data.Lang "sv"}}Logga in{{else}}Log in{{end}}</a>
+
+                <p class="view-row"><strong>{{if eq .Data.Lang "sv"}}Socialt{{else}}Social media{{end}}</strong></p>
+                <a class="footer-link" target="_blank" href="https://www.facebook.com/upformatch.se/">Facebook</a>
+                <a class="footer-link" target="_blank" href="https://www.instagram.com/upformatch/">Instagram</a>
+                <a class="footer-link" target="_blank"
+                    href="https://www.linkedin.com/company/up-for-sports-ab/">Linkedin</a>
+
+                <img class="footer-logo" src="{{.Props.Static}}images/app/upformatch-logo-light.png">
+                <a href="https://generationpep.se/"><img class="footer-pep"
+                        src="{{.Props.Static}}images/app/pep-white.png"></a>
+            </div>
+            <div class="footer-flex-item">
+                <p><strong>{{if eq .Data.Lang "sv"}}Mer{{else}}More{{end}}</strong></p>
+                <a class="footer-link" href="/about">{{if eq .Data.Lang "sv"}}Om Up For Match{{else}}About Up For
+                    Match{{end}}</a>
+                <a class="footer-link" href="/faq">FAQ</a>
+                {{if eq .Data.Lang "sv"}}
+                <a class="footer-link" href="{{.Props.Static}}/Annonsering_UFM_Norden_mars_2023.pdf">Annonsera hos
+                    oss</a>
+                {{else}}
+                <a class="footer-link" href="{{.Props.Static}}/Advertising_UFM.pdf">Advertise at Up For Match</a>
+                {{end}}
+                <a class="footer-link" href="/terms">{{if eq .Data.Lang "sv"}}Allmänna villkor{{else}}Terms and
+                    conditions{{end}}</a>
+                <a class="footer-link" href="/policy">{{if eq .Data.Lang "sv"}}Integritetspolicy{{else}}Privacy
+                    policy{{end}}</a>
+                <a class="footer-link" href="/cookies">Cookie policy</a>
+                <a class="footer-link" href="https://www.upforsports.se/">Up For Sports</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer footer-full">
+    <div class="main">
+        <div class="footer-flex">
+            <div class="footer-flex-item">
+                <img class="footer-logo" src="{{.Props.Static}}images/app/upformatch-logo-light.png">
+                <a href="https://generationpep.se/"><img class="footer-pep"
+                        src="{{.Props.Static}}images/app/pep-white.png"></a>
+            </div>
+            <div class="footer-flex-item">
+                <p><strong>{{if eq .Data.Lang "sv"}}Meny{{else}}Menu{{end}}</strong></p>
+                <a class="footer-link" href="/">{{if eq .Data.Lang "sv"}}Hem{{else}}Home{{end}}</a>
+                <a class="footer-link" href="/signup">{{if eq .Data.Lang "sv"}}Registrera dig{{else}}Register{{end}}</a>
+                <a class="footer-link" href="/auth/login">{{if eq .Data.Lang "sv"}}Logga in{{else}}Log in{{end}}</a>
+            </div>
+            <div class="footer-flex-item">
+                <p><strong>{{if eq .Data.Lang "sv"}}Socialt{{else}}Social media{{end}}</strong></p>
+                <a class="footer-link" target="_blank" href="https://www.facebook.com/upformatch.se/">Facebook</a>
+                <a class="footer-link" target="_blank" href="https://www.instagram.com/upformatch/">Instagram</a>
+                <a class="footer-link" target="_blank"
+                    href="https://www.linkedin.com/company/up-for-sports-ab/">Linkedin</a>
+            </div>
+            <div class="footer-flex-item">
+                <p><strong>{{if eq .Data.Lang "sv"}}Mer{{else}}More{{end}}</strong></p>
+                <a class="footer-link" href="/about">{{if eq .Data.Lang "sv"}}Om Up For Match{{else}}About Up For
+                    Match{{end}}</a>
+                <a class="footer-link" href="/faq">FAQ</a>
+                {{if eq .Data.Lang "sv"}}
+                <a class="footer-link" href="{{.Props.Static}}/Annonsering_UFM_Norden_mars_2023.pdf">Annonsera hos
+                    oss</a>
+                {{else}}
+                <a class="footer-link" href="{{.Props.Static}}/Advertising_UFM.pdf">Advertise at Up For Match</a>
+                {{end}}
+                <a class="footer-link" href="/terms">{{if eq .Data.Lang "sv"}}Allmänna villkor{{else}}Terms and
+                    conditions{{end}}</a>
+                <a class="footer-link" href="/policy">{{if eq .Data.Lang "sv"}}Integritetspolicy{{else}}Privacy
+                    policy{{end}}</a>
+                <a class="footer-link" href="/cookies">Cookie policy</a>
+                <a class="footer-link" href="https://www.upforsports.se/">Up For Sports</a>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

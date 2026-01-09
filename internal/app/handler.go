@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -123,6 +124,7 @@ func (a *App) handleAuth(next http.HandlerFunc) http.HandlerFunc {
 			User:    *user,
 			IsTutor: tutor != nil,
 		})
+		ctx = context.WithValue(ctx, model.ContextKeyTutor, tutor)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -134,6 +136,10 @@ func (a *App) handleAuth(next http.HandlerFunc) http.HandlerFunc {
 
 func (a *App) profile(r *http.Request) model.Profile {
 	return r.Context().Value(model.ContextKeyProfile).(model.Profile)
+}
+
+func (a *App) tutor(r *http.Request) *model.Tutor {
+	return r.Context().Value(model.ContextKeyTutor).(*model.Tutor)
 }
 
 func (a *App) page(name string) http.HandlerFunc {
@@ -148,7 +154,7 @@ func (a *App) page(name string) http.HandlerFunc {
 }
 
 func (a *App) homeHandler(w http.ResponseWriter, r *http.Request) {
-	page := a.view.Page("home.html")
+	page := a.view.Page("home-student.html")
 	page.Add("Profile", a.profile(r))
 
 	if err := a.view.Execute(w, page); err != nil {
@@ -229,22 +235,20 @@ func (a *App) handleLogin() http.HandlerFunc {
 					http.Redirect(w, r, "/auth/login?error=login", http.StatusFound)
 				}
 
-				// if user.SSN != nil && *user.SSN != "" {
-				// 	http.Redirect(w, r, "/auth/login?error=login", http.StatusFound)
-				// }
-
-				// profile := a.profile(r)
 				tutorProfile, err := a.repo.TutorByUserID(user.ID)
-				if err != nil {
+				if err != sql.ErrNoRows {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 
+				log.Println("found tutor profile:", tutorProfile)
+
 				// User has profile that requires BankID
-				if tutorProfile != nil && user.SSN != nil && *user.SSN != "" {
+				if tutorProfile != nil || user.SSN != nil && *user.SSN != "" {
 					http.Redirect(w, r, "/auth/login?error=login", http.StatusFound)
 					return
 				}
+				log.Println("---> XX")
 
 				loginID, err = a.auth.Login(username, password)
 				if err != nil {
@@ -362,29 +366,20 @@ func (a *App) handleSignupStudent() http.HandlerFunc {
 			phone := r.FormValue("phone")
 			email := r.FormValue("email")
 			location := r.FormValue("location")
-			subjects := r.Form["subject"]
-			levels := r.Form["level"]
-			onlineLessons := r.FormValue("online-lessons")
-			description := r.FormValue("description")
 			smsOptIn := r.FormValue("sms-opt-in")
-			bidToken := r.FormValue("bid-token")
+			password := r.FormValue("password")
 
+			log.Println("password", password)
 			log.Println("phone", phone)
 			log.Println("email", email)
 			log.Println("location", location)
-			log.Println("subject", subjects)
-			log.Println("level", levels)
-			log.Println("onlineLessons", onlineLessons)
-			log.Println("description", description)
 			log.Println("smsOptIn", smsOptIn)
-			log.Println("bidToken", bidToken)
 
 			log.Println("firstname", "firstname")
 			log.Println("lastname", "lastname")
 			log.Println("year", "year")
 
-			unusedPassword := "r2UHtjbsZ5GKPEyYWdpBeg"
-			token, err := a.auth.AddUser(firstname, lastname, email, phone, unusedPassword, nil, smsOptIn == "on")
+			token, err := a.auth.AddUser(firstname, lastname, email, phone, password, nil, smsOptIn == "on")
 			if err != nil {
 				log.Printf("auth: add user: %s, %v", email, err)
 				http.Redirect(w, r, "/signup?error=adduser", http.StatusFound)
@@ -441,7 +436,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 
 			phone := r.FormValue("phone")
 			email := r.FormValue("email")
-			location := r.FormValue("location")
+			locations := r.Form["locations"]
 			subjects := r.Form["subject"]
 			levels := r.Form["level"]
 			onlineLessons := r.FormValue("online-lessons")
@@ -451,7 +446,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 
 			log.Println("phone", phone)
 			log.Println("email", email)
-			log.Println("location", location)
+			log.Println("locations", locations)
 			log.Println("subject", subjects)
 			log.Println("level", levels)
 			log.Println("onlineLessons", onlineLessons)
@@ -483,10 +478,9 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 
 			tutorID, err := a.core.AddTutor(model.Tutor{
 				UserID:        token.UserID,
-				LocationID:    location,
 				OnlineLessons: onlineLessons == "on",
 				Description:   description,
-			}, subjects, levels)
+			}, locations, subjects, levels)
 
 			if err != nil {
 				log.Printf("core: add tutor: %s, %v", email, err)
@@ -599,34 +593,77 @@ func (a *App) handleConfirm() http.HandlerFunc {
 	}
 }
 
-func (a *App) handleTutorsRequest(w http.ResponseWriter, r *http.Request) {
+func (a *App) handleProfile(w http.ResponseWriter, r *http.Request) {
 
-	subjects, err := a.repo.Subjects()
-	if err != nil {
-		http.Error(w, "Unable to fetch subjects", http.StatusInternalServerError)
-		return
-	}
+	profile := a.profile(r)
+	tutor := a.tutor(r)
 
-	levels, err := a.repo.Levels()
-	if err != nil {
-		http.Error(w, "Unable to fetch levels", http.StatusInternalServerError)
-		return
-	}
-
-	locations, err := a.repo.Locations()
-	if err != nil {
-		http.Error(w, "Unable to fetch locations", http.StatusInternalServerError)
-		return
-	}
+	a.repo.TutorByUserID(profile.User.ID)
 
 	page := a.view.
-		Page("tutor-request.html").
-		Add("Subjects", subjects).
-		Add("Levels", levels).
-		Add("Locations", locations)
+		Page("profile.html").
+		Add("Profile", profile).
+		Add("Tutor", tutor)
 
 	if err := a.view.Execute(w, page); err != nil {
 		log.Printf("handleConfirm: %v", err)
+	}
+}
+
+func (a *App) handleNewLesson(w http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case http.MethodGet:
+		subjects, err := a.repo.Subjects()
+		if err != nil {
+			http.Error(w, "Unable to fetch subjects", http.StatusInternalServerError)
+			return
+		}
+
+		levels, err := a.repo.Levels()
+		if err != nil {
+			http.Error(w, "Unable to fetch levels", http.StatusInternalServerError)
+			return
+		}
+
+		locations, err := a.repo.Locations()
+		if err != nil {
+			http.Error(w, "Unable to fetch locations", http.StatusInternalServerError)
+			return
+		}
+
+		page := a.view.
+			Page("lesson-new.html").
+			Add("Subjects", subjects).
+			Add("Levels", levels).
+			Add("Locations", locations)
+
+		if err := a.view.Execute(w, page); err != nil {
+			log.Printf("handleConfirm: %v", err)
+		}
+
+	case http.MethodPost:
+		var req model.LessonRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid json", http.StatusBadRequest)
+			return
+		}
+
+		lessonID, err := a.core.AddLesson(a.profile(r).User.ID, req)
+		if err != nil {
+			log.Println("handleNewLesson: unable to add lesson:", err)
+			http.Error(w, "unable to add lesson", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"lessonID": lessonID,
+			"status":   "ok",
+		})
+
+	default:
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
 }
 

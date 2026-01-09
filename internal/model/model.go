@@ -8,6 +8,7 @@ type ContextKey string
 // ContextKeys.
 const (
 	ContextKeyProfile ContextKey = "profile"
+	ContextKeyTutor   ContextKey = "tutor"
 )
 
 type Location struct {
@@ -41,7 +42,6 @@ type Tutor struct {
 	ID            string    `db:"id"`
 	UserID        string    `db:"user_id"`
 	Image         string    `db:"image"`
-	LocationID    string    `db:"location_id"`
 	OnlineLessons bool      `db:"online_lessons"`
 	Description   string    `db:"description"`
 	CreatedAt     time.Time `db:"created_at"`
@@ -55,7 +55,6 @@ type TutorView struct {
 	ID            string    `db:"id"`
 	UserID        string    `db:"user_id"`
 	Image         string    `db:"image"`
-	LocationID    string    `db:"location_id"`
 	OnlineLessons bool      `db:"online_lessons"`
 	Description   string    `db:"description"`
 	CreatedAt     time.Time `db:"created_at"`
