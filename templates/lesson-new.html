@@ -1,317 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     {{ template "head" . }}
+  </head>
 
-</head>
+  {{ define "tutor-request-header" }}
+  <div class="header-squiggle">
+    <h3 style="padding: 22px" class="color-primary">{{.}}</h3>
+    <img class="show-on-large" style="position: absolute; top: -15px; right: -50px" src="/static/images/app/squiggle-star-1.png" />
+    <img class="show-on-large" style="position: absolute; top: 40px; left: -60px" src="/static/images/app/squiggle-star-2.png" />
+  </div>
+  {{ end }}
 
-{{ define "tutor-request-header" }}
-<div class="header-squiggle">
-    <h3 style="padding: 22px" class=" color-primary">{{.}}</h3>
-    <img class="show-on-large" style="position: absolute; top: -15px; right: -50px;"
-        src="/static/images/app/squiggle-star-1.png" />
-    <img class="show-on-large" style="position: absolute; top: 40px; left: -60px;"
-        src="/static/images/app/squiggle-star-2.png" />
-</div>
-{{ end }}
-
-<body>
-
+  <body>
     {{template "nav" .Name}}
-    <div class="full-page blue-section ">
-        <div class="view-container ">
-            <div id="step-container" class="step-right center container centered-page ">
-                <!-- step 1 -->
-                <div id="step-1" class="view-row step active">
-                    {{ template "tutor-request-header" "Vilket ämne behöver du hjälp med?" }}
+    <div class="full-page blue-section">
+      <div class="view-container">
+        <div id="step-container" class="step-right center container centered-page">
+          <!-- step 1 -->
+          <div id="step-1" class="view-row step active">
+            {{ template "tutor-request-header" "Vilket ämne behöver du hjälp med?" }}
 
-                    <div class="view-row-alt step-content fade-container">
-                        <div style="max-width: 600px" class="container">
-                            <div class="flex gap-16">
-                                {{ range .Data.Subjects }}
-                                <button onclick="selectSubject(event, '{{.ID}}')" style="width: 180px;"
-                                    class="view-btn view-btn-white subject">{{ .Name }}</button>
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
+            <div class="view-row-alt step-content fade-container">
+              <div style="max-width: 600px" class="container">
+                <div class="flex gap-16">
+                  {{ range .Data.Subjects }}
+                  <button onclick="selectSubject(event, '{{.ID}}')" style="width: 180px" class="view-btn view-btn-white subject">{{ .Name }}</button>
+                  {{ end }}
                 </div>
+              </div>
+            </div>
+          </div>
 
+          <!-- step 2 -->
+          <div id="step-2" class="view-row step">
+            {{ template "tutor-request-header" "Vilken nivå söker du?" }}
 
-                <!-- step 2 -->
-                <div id="step-2" class="view-row step">
-                    {{ template "tutor-request-header" "Vilken nivå söker du?" }}
-
-                    <div class="view-row-alt step-content">
-                        <div style="max-width: 200px" class="container">
-                            <div class="flex gap-16">
-                                {{ range .Data.Levels }}
-                                <button onclick="selectLevel(event, '{{.ID}}')" style="width: 100%;"
-                                    class="view-btn view-btn-white level">{{ .Name }}</button>
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
+            <div class="view-row-alt step-content">
+              <div style="max-width: 200px" class="container">
+                <div class="flex gap-16">
+                  {{ range .Data.Levels }}
+                  <button onclick="selectLevel(event, '{{.ID}}')" style="width: 100%" class="view-btn view-btn-white level">{{ .Name }}</button>
+                  {{ end }}
                 </div>
+              </div>
+            </div>
+          </div>
 
-                <!-- step 3 -->
-                <div id="step-3" class="view-row step">
-                    {{ template "tutor-request-header" "Online eller fysisk hjälp?" }}
+          <!-- step 3 -->
+          <div id="step-3" class="view-row step">
+            {{ template "tutor-request-header" "Online eller fysisk hjälp?" }}
 
-                    <div class="fade-container view-row-alt step-content ">
-                        <div style="max-width: 600px; " class="container">
-                            <div class="flex gap-16">
-                                <button onclick="selectLocation(event, 'online')" style="width: 180px;"
-                                    class="view-btn view-btn-white location">Online</button>
-                                {{ range .Data.Locations }}
-                                <button onclick="selectLocation(event, '{{.ID}}')" style="width: 180px;"
-                                    class="view-btn view-btn-white location">{{ .Name }}</button>
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
+            <div class="fade-container view-row-alt step-content">
+              <div style="max-width: 600px" class="container">
+                <div class="flex gap-16">
+                  <button onclick="selectLocation(event, 'online')" style="width: 180px" class="view-btn view-btn-white location">Online</button>
+                  {{ range .Data.Locations }}
+                  <button onclick="selectLocation(event, '{{.ID}}')" style="width: 180px" class="view-btn view-btn-white location">{{ .Name }}</button>
+                  {{ end }}
                 </div>
+              </div>
+            </div>
+          </div>
 
-                <!-- step 4 -->
-                <div id="step-4" class="view-row step">
-                    {{ template "tutor-request-header" "Välj Studiecoach" }}
+          <!-- step 4 -->
+          <div id="step-4" class="view-row step">
+            {{ template "tutor-request-header" "Välj Studiecoach" }}
 
-                    <div id="tutors-container" hx-get="/list/tutors" hx-trigger="loadTutors" hx-target="this"
-                        hx-swap="innerHTML" class="step-content fade-container">
-                    </div>
-                </div>
+            <div id="tutors-container" hx-get="/list/tutors" hx-trigger="loadTutors" hx-target="this" hx-swap="innerHTML" class="step-content fade-container"></div>
+          </div>
 
-                <!-- step 5 -->
-                <div id="step-5" class="view-row step">
-                    {{ template "tutor-request-header" "Information om lektionen" }}
+          <!-- step 5 -->
+          <div id="step-5" class="view-row step">{{ template "tutor-request-header" "Välj tid" }}</div>
 
-                    <div class="view-row-alt step-content">
+          <!-- step 6 -->
+          <div id="step-6" class="view-row step">
+            {{ template "tutor-request-header" "Information om lektionen" }}
 
-                        <input style="width: 600px; max-width: 80%;" class="view-text-input text-box"
-                            onkeyup="tutorRequest.title=this.value; validateStep()"
-                            onchange="tutorRequest.title=this.value; validateStep()" id="title" type="text"
-                            placeholder="Rubrik">
+            <div class="view-row-alt step-content">
+              <input style="width: 600px; max-width: 80%" class="view-text-input text-box" onkeyup="tutorRequest.title=this.value; validateStep()" onchange="tutorRequest.title=this.value; validateStep()" id="title" type="text" placeholder="Rubrik" />
 
-                        <textarea style="width: 600px; max-width: 80%; height: 200px;"
-                            onkeyup="tutorRequest.description = this.value; validateStep()"
-                            onchange="tutorRequest.description = this.value; validateStep()" id="description"
-                            class="view-row-alt view-text-input text-box" style="height: 150px" placeholder="Här skriver du all information som studiecoachen behöver veta om lektionen. 
+              <textarea
+                style="width: 600px; max-width: 80%; height: 200px"
+                onkeyup="tutorRequest.description = this.value; validateStep()"
+                onchange="tutorRequest.description = this.value; validateStep()"
+                id="description"
+                class="view-row-alt view-text-input text-box"
+                style="height: 150px"
+                placeholder="Här skriver du all information som studiecoachen behöver veta om lektionen. 
 
 Exempelvis: Beskrivning av elevens ålder, årskurs, etc
-Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig information." type="text-area"></textarea>
-                    </div>
-                </div>
-
-                <!-- step 6 -->
-                <div id="step-6" class="view-row step">
-                    {{ template "tutor-request-header" "Kontrollera information" }}
-
-                    <div class="step-content">
-                        <div class="text-box info-box">
-                            <p class=" text-medium">Hjälp med: <span id="preview-subject"></span></p>
-                            <p class="text-medium">Nivå: <span id="preview-level"></span></p>
-                            <p class="text-medium">Var: <span id="preview-location"></span></p>
-                            <br>
-                            <p class="text-medium" id="preview-title"></p>
-                            <br>
-                            <p class="text-medium opacity-70" id="preview-description"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- step 7  -->
-                <div id="step-7" class="view-row step">
-                    <div class="step-content">
-                        <h1>Betal Steg</h1>
-                    </div>
-                </div>
+Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig information."
+                type="text-area"
+              ></textarea>
             </div>
+          </div>
 
-            <div id="buttons" class="view-row-alt">
-                <div class="flex flex-row m-16 gap-16">
-                    <div id="back-button" class="back-button hidden"></div>
-                    <button id="next-button" class="view-btn view-btn-white-fill view-btn-wide" disabled>Nästa</button>
-                    <button id="send-button" onclick="createLessonRequest(event, 'online')"
-                        class="view-btn view-btn-white-fill view-btn-wide hidden">Skicka</button>
-                </div>
-            </div>
+          <!-- step 7 -->
+          <div id="step-7" class="view-row step">
+            {{ template "tutor-request-header" "Kontrollera information" }}
 
-            <div id="step-tracker" class="view-row-alt flex-rows flex">
-                <div class="step-arrow-active step-arrow">1</div>
-                <div class="step-arrow">2</div>
-                <div class="step-arrow">3</div>
-                <div class="step-arrow">4</div>
-                <div class="step-arrow">5</div>
-                <div class="step-arrow">6</div>
-                <div class="step-arrow">7</div>
+            <div class="step-content">
+              <div class="text-box info-box">
+                <p class="text-medium">Hjälp med: <span id="preview-subject"></span></p>
+                <p class="text-medium">Nivå: <span id="preview-level"></span></p>
+                <p class="text-medium">Var: <span id="preview-location"></span></p>
+                <br />
+                <p class="text-medium" id="preview-title"></p>
+                <br />
+                <p class="text-medium opacity-70" id="preview-description"></p>
+              </div>
             </div>
+          </div>
+
+          <!-- step 8  -->
+          <div id="step-8" class="view-row step">
+            <div class="step-content">
+              <h1>Betal Steg</h1>
+            </div>
+          </div>
         </div>
+
+        <div id="buttons" class="view-row-alt">
+          <div class="flex flex-row m-16 gap-16">
+            <div id="back-button" class="back-button hidden"></div>
+            <button id="next-button" class="view-btn view-btn-white-fill view-btn-wide" disabled>Nästa</button>
+            <button id="send-button" onclick="createLessonRequest(event, 'online')" class="view-btn view-btn-white-fill view-btn-wide hidden">Skicka</button>
+          </div>
+        </div>
+
+        <div id="step-tracker" class="view-row-alt flex-rows flex">
+          <div class="step-arrow-active step-arrow">1</div>
+          <div class="step-arrow">2</div>
+          <div class="step-arrow">3</div>
+          <div class="step-arrow">4</div>
+          <div class="step-arrow">5</div>
+          <div class="step-arrow">6</div>
+          <div class="step-arrow">7</div>
+          <div class="step-arrow">8</div>
+        </div>
+      </div>
     </div>
     <!-- {{.Data}} -->
 
-    <style>
-
-    </style>
+    <style></style>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script>
-        let step = 1;
+      let step = 1;
 
-        let tutorRequest = {
-            subject: -1,
-            level: -1,
-            location: -1,
-            isOnline: false,
-            tutors: [],
-            title: "",
-            description: "",
-            startAt: null,
-            duration: null,
+      let tutorRequest = {
+        subject: -1,
+        level: -1,
+        location: -1,
+        isOnline: false,
+        tutors: [],
+        title: "",
+        description: "",
+        startAt: null,
+        duration: null,
+      };
+
+      let preview = {
+        subject: "",
+        level: "",
+        location: "",
+      };
+
+      let stepArrows = document.querySelectorAll(".step-arrow");
+      let buttons = document.getElementById("buttons");
+      let stepper = document.getElementById("step-container");
+      let backButton = document.getElementById("back-button");
+      let nextButton = document.getElementById("next-button");
+      let sendButton = document.getElementById("send-button");
+      let steps = document.querySelectorAll(".step");
+
+      let levels = document.querySelectorAll(".level");
+      let subjects = document.querySelectorAll(".subject");
+
+      let selectSubject = (e, subject) => {
+        tutorRequest.subject = subject;
+        subjects.forEach((s) => s.classList.remove("view-btn-green-alt"));
+        e.target.classList.toggle("view-btn-green-alt");
+        preview.subject = e.target.innerText;
+        validateStep();
+      };
+
+      let selectLevel = (e, level) => {
+        let turnOff = tutorRequest.level == level;
+        tutorRequest.level = turnOff ? -1 : level;
+        levels.forEach((lv) => lv.classList.remove("view-btn-green-alt"));
+        turnOff ? e.target.classList.remove("view-btn-green-alt") : e.target.classList.add("view-btn-green-alt");
+        preview.level = e.target.innerText;
+        validateStep();
+      };
+
+      let selectLocation = (e, location) => {
+        tutorRequest.location = location;
+        tutorRequest.isOnline = location === "online";
+        let locations = document.querySelectorAll(".location");
+        locations.forEach((l) => l.classList.remove("view-btn-green-alt"));
+        e.target.classList.add("view-btn-green-alt");
+        preview.location = e.target.innerText;
+        validateStep();
+      };
+
+      function toggleTutor(e, tutorID) {
+        let select = tutorRequest.tutors.includes(tutorID);
+        let t = tutorRequest.tutors;
+        t.includes(tutorID) ? (tutorRequest.tutors = t.filter((id) => id !== tutorID)) : t.push(tutorID);
+        e.target.classList.toggle("view-btn-green-sel");
+        select ? (e.target.innerText = "Välj") : (e.target.innerText = "Vald");
+        validateStep();
+      }
+
+      nextButton.onclick = () => {
+        stepper.style.viewTransitionName = "step-right";
+        if (step === 3) fetchTutors();
+        if (step === 5) updatePreview();
+        if (step < 7) tryViewTransition(() => updateStep(1));
+      };
+
+      backButton.onclick = () => {
+        stepper.style.viewTransitionName = "step-left";
+        if (step > 1) tryViewTransition(() => updateStep(-1));
+      };
+
+      async function fetchTutors() {
+        let el = document.getElementById("tutors-container");
+        el.setAttribute(
+          "hx-vals",
+          JSON.stringify({
+            subject: tutorRequest.subject,
+            level: tutorRequest.level,
+            location: tutorRequest.location,
+          })
+        );
+
+        htmx.trigger("#tutors-container", "loadTutors");
+      }
+
+      function updatePreview() {
+        document.getElementById("preview-subject").innerText = preview.subject;
+        document.getElementById("preview-level").innerText = preview.level;
+        let locationName = tutorRequest.isOnline ? "Online" : preview.location;
+        document.getElementById("preview-location").innerText = locationName;
+        document.getElementById("preview-title").innerText = tutorRequest.title;
+        document.getElementById("preview-description").innerText = tutorRequest.description;
+      }
+
+      function validateStep() {
+        let isValid = false;
+        if (step === 1) isValid = tutorRequest.subject !== -1;
+        if (step === 2) isValid = tutorRequest.level !== -1;
+        if (step === 3) isValid = tutorRequest.location !== -1;
+        if (step === 4) isValid = tutorRequest.tutors.length > 0;
+        if (step === 5) isValid = tutorRequest.title.length > 0 && tutorRequest.description.length > 0;
+        if (step === 6) isValid = true;
+
+        nextButton.disabled = !isValid;
+      }
+
+      function updateStep(direction) {
+        step += direction;
+        const idx = step - 1;
+        stepArrows[idx - direction].classList.remove("step-arrow-active");
+        stepArrows[idx].classList.add("step-arrow-active");
+        stepArrows[idx].classList.remove("step-arrow-white");
+        if (step > 1) stepArrows[idx - 1].classList.add("step-arrow-white");
+        backButton.classList.toggle("hidden", step === 1);
+        console.log(step, step === 7, sendButton);
+        if (step === 7) {
+          nextButton.classList.add("hidden");
+          sendButton.classList.remove("hidden");
+        }
+        if (step !== 7) {
+          nextButton.classList.remove("hidden");
+          sendButton.classList.add("hidden");
         }
 
-        let preview = {
-            subject: "",
-            level: "",
-            location: ""
-        }
+        steps.forEach((s, index) => (index === idx ? s.classList.add("active") : s.classList.remove("active")));
+        validateStep();
+      }
 
-        let stepArrows = document.querySelectorAll('.step-arrow');
-        let buttons = document.getElementById('buttons');
-        let stepper = document.getElementById('step-container');
-        let backButton = document.getElementById('back-button');
-        let nextButton = document.getElementById('next-button');
-        let sendButton = document.getElementById('send-button');
-        let steps = document.querySelectorAll('.step');
+      function createLessonRequest() {
+        fetch("/lessons/new", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(tutorRequest),
+        })
+          .then((response) => {
+            if (response.ok) {
+              window.location.href = "/home"; // Redirect to home or another page
 
+              window.location.href = "/home&lesson=" + response.lessonID;
+            } else {
+              alert("Ett fel uppstod vid skickandet av förfrågan.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Ett fel uppstod vid skickandet av förfrågan.");
+          });
+      }
 
-        let levels = document.querySelectorAll('.level');
-        let subjects = document.querySelectorAll('.subject');
+      let tryViewTransition = (f) => (document.startViewTransition ? document.startViewTransition(f) : f());
 
-        let selectSubject = (e, subject) => {
-            tutorRequest.subject = subject;
-            subjects.forEach(s => s.classList.remove('view-btn-green-alt'));
-            e.target.classList.toggle('view-btn-green-alt');
-            preview.subject = e.target.innerText;
-            validateStep();
-        }
-
-        let selectLevel = (e, level) => {
-            let turnOff = tutorRequest.level == level
-            tutorRequest.level = turnOff ? -1 : level;
-            levels.forEach(lv => lv.classList.remove('view-btn-green-alt'));
-            turnOff ? e.target.classList.remove('view-btn-green-alt') : e.target.classList.add('view-btn-green-alt');
-            preview.level = e.target.innerText;
-            validateStep();
-        }
-
-        let selectLocation = (e, location) => {
-            tutorRequest.location = location;
-            tutorRequest.isOnline = location === 'online';
-            let locations = document.querySelectorAll('.location');
-            locations.forEach(l => l.classList.remove('view-btn-green-alt'));
-            e.target.classList.add('view-btn-green-alt');
-            preview.location = e.target.innerText;
-            validateStep();
-        }
-
-        function toggleTutor(e, tutorID) {
-            let select = tutorRequest.tutors.includes(tutorID);
-            let t = tutorRequest.tutors;
-            t.includes(tutorID) ? tutorRequest.tutors = t.filter(id => id !== tutorID) : t.push(tutorID);
-            e.target.classList.toggle('view-btn-green-sel');
-            select ? e.target.innerText = "Välj" : e.target.innerText = "Vald";
-            validateStep();
-        }
-
-        nextButton.onclick = () => {
-            stepper.style.viewTransitionName = 'step-right';
-            if (step === 3) fetchTutors();
-            if (step === 5) updatePreview();
-            if (step < 7) tryViewTransition(() => updateStep(1));
-        };
-
-        backButton.onclick = () => {
-            stepper.style.viewTransitionName = 'step-left';
-            if (step > 1) tryViewTransition(() => updateStep(-1));
-        };
-
-        async function fetchTutors() {
-            let el = document.getElementById("tutors-container")
-            el.setAttribute(
-                "hx-vals",
-                JSON.stringify({
-                    subject: tutorRequest.subject,
-                    level: tutorRequest.level,
-                    location: tutorRequest.location
-                })
-            );
-
-            htmx.trigger("#tutors-container", "loadTutors")
-        }
-
-        function updatePreview() {
-            document.getElementById("preview-subject").innerText = preview.subject;
-            document.getElementById("preview-level").innerText = preview.level;
-            let locationName = tutorRequest.isOnline ? "Online" : preview.location;
-            document.getElementById("preview-location").innerText = locationName;
-            document.getElementById("preview-title").innerText = tutorRequest.title;
-            document.getElementById("preview-description").innerText = tutorRequest.description;
-        }
-
-
-        function validateStep() {
-            let isValid = false;
-            if (step === 1) isValid = tutorRequest.subject !== -1;
-            if (step === 2) isValid = tutorRequest.level !== -1;
-            if (step === 3) isValid = tutorRequest.location !== -1;
-            if (step === 4) isValid = tutorRequest.tutors.length > 0;
-            if (step === 5) isValid = tutorRequest.title.length > 0 && tutorRequest.description.length > 0;
-            if (step === 6) isValid = true
-
-            nextButton.disabled = !isValid;
-        }
-
-        function updateStep(direction) {
-            step += direction;
-            const idx = step - 1
-            stepArrows[idx - direction].classList.remove('step-arrow-active');
-            stepArrows[idx].classList.add('step-arrow-active');
-            stepArrows[idx].classList.remove('step-arrow-white');
-            if (step > 1) stepArrows[idx - 1].classList.add('step-arrow-white');
-            backButton.classList.toggle('hidden', step === 1);
-            console.log(step, step === 7, sendButton);
-            if (step === 7) { nextButton.classList.add('hidden'); sendButton.classList.remove('hidden'); }
-            if (step !== 7) { nextButton.classList.remove('hidden'); sendButton.classList.add('hidden'); }
-
-            steps.forEach((s, index) => (index === idx) ? s.classList.add('active') : s.classList.remove('active'));
-            validateStep();
-        }
-
-        function createLessonRequest() {
-            fetch('/lessons/new', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(tutorRequest),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/home'; // Redirect to home or another page
-
-                        window.location.href = '/home&lesson=' + response.lessonID;
-                    } else {
-                        alert('Ett fel uppstod vid skickandet av förfrågan.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Ett fel uppstod vid skickandet av förfrågan.');
-                });
-        }
-
-        let tryViewTransition = (f) => document.startViewTransition ? document.startViewTransition(f) : f()
-
+      updateStep(4);
     </script>
-
-</body>
+  </body>
+</html>

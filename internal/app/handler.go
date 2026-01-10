@@ -82,11 +82,15 @@ func (a *App) handleAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		tutor, err := a.repo.TutorByUserID(userID)
+		var tutor model.Tutor
+		t, err := a.repo.TutorByUserID(userID)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("handleAuth: unable to fetch tutor:", err)
 			http.Redirect(w, r, "/auth/login", http.StatusFound)
 			return
+		}
+		if t != nil {
+			tutor = *t
 		}
 
 		switch user.CookieConsent {
@@ -122,7 +126,7 @@ func (a *App) handleAuth(next http.HandlerFunc) http.HandlerFunc {
 
 		ctx := context.WithValue(r.Context(), model.ContextKeyProfile, model.Profile{
 			User:    *user,
-			IsTutor: tutor != nil,
+			IsTutor: tutor.ID != "",
 		})
 		ctx = context.WithValue(ctx, model.ContextKeyTutor, tutor)
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -138,8 +142,8 @@ func (a *App) profile(r *http.Request) model.Profile {
 	return r.Context().Value(model.ContextKeyProfile).(model.Profile)
 }
 
-func (a *App) tutor(r *http.Request) *model.Tutor {
-	return r.Context().Value(model.ContextKeyTutor).(*model.Tutor)
+func (a *App) tutor(r *http.Request) model.Tutor {
+	return r.Context().Value(model.ContextKeyTutor).(model.Tutor)
 }
 
 func (a *App) page(name string) http.HandlerFunc {
@@ -379,7 +383,7 @@ func (a *App) handleSignupStudent() http.HandlerFunc {
 			log.Println("lastname", "lastname")
 			log.Println("year", "year")
 
-			token, err := a.auth.AddUser(firstname, lastname, email, phone, password, nil, smsOptIn == "on")
+			token, err := a.auth.AddUser(firstname, lastname, email, phone, password, nil, smsOptIn == "on", model.ActiveRoleStudent)
 			if err != nil {
 				log.Printf("auth: add user: %s, %v", email, err)
 				http.Redirect(w, r, "/signup?error=adduser", http.StatusFound)
@@ -469,7 +473,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 			log.Println("year", year)
 
 			unusedPassword := "r2UHtjbsZ5GKPEyYWdpBeg"
-			token, err := a.auth.AddUser(firstname, lastname, email, phone, unusedPassword, &claim.SSN, smsOptIn == "on")
+			token, err := a.auth.AddUser(firstname, lastname, email, phone, unusedPassword, &claim.SSN, smsOptIn == "on", model.ActiveRoleTutor)
 			if err != nil {
 				log.Printf("auth: add user: %s, %v", email, err)
 				http.Redirect(w, r, "/signup?error=adduser", http.StatusFound)
@@ -479,7 +483,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 			tutorID, err := a.core.AddTutor(model.Tutor{
 				UserID:        token.UserID,
 				OnlineLessons: onlineLessons == "on",
-				Description:   description,
+				Bio:           description,
 			}, locations, subjects, levels)
 
 			if err != nil {
@@ -593,6 +597,29 @@ func (a *App) handleConfirm() http.HandlerFunc {
 	}
 }
 
+func (a *App) handleSwitchRole(w http.ResponseWriter, r *http.Request) {
+
+	profile := a.profile(r)
+
+	targetRole := model.ActiveRole(r.URL.Query().Get("role"))
+
+	if targetRole != model.ActiveRoleStudent &&
+		targetRole != model.ActiveRoleTutor {
+		http.Error(w, "invalid role", http.StatusBadRequest)
+		return
+	}
+
+	err := a.core.SwitchRole(profile.User.ID, targetRole)
+	if err != nil {
+		log.Println("handleSwitchRole: unable to switch role:", err)
+		http.Error(w, "unable to switch role", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/profile", http.StatusFound)
+
+}
+
 func (a *App) handleProfile(w http.ResponseWriter, r *http.Request) {
 
 	profile := a.profile(r)
@@ -602,6 +629,7 @@ func (a *App) handleProfile(w http.ResponseWriter, r *http.Request) {
 
 	page := a.view.
 		Page("profile.html").
+		Add("ActiveRole", profile.User.ActiveRole).
 		Add("Profile", profile).
 		Add("Tutor", tutor)
 

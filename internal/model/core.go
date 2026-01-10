@@ -68,7 +68,7 @@ func (c *Core) AddTutor(tutor Tutor, locations []string, subjects []string, leve
 	query := `
 	INSERT INTO tutors (id, user_id, online_lessons, description, created_at, updated_at)
 		 VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-	_, err = tx.Exec(query, id, tutor.UserID, tutor.OnlineLessons, tutor.Description)
+	_, err = tx.Exec(query, id, tutor.UserID, tutor.OnlineLessons, tutor.Bio)
 	if err != nil {
 		tx.Rollback()
 		return "", fmt.Errorf("failed to add tutor %w", err)
@@ -176,4 +176,10 @@ func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
 	}
 
 	return id.String(), nil
+}
+
+// SwitchOrganization use cae.
+func (c *Core) SwitchRole(userID string, role ActiveRole) error {
+	_, err := c.db.Exec("UPDATE users SET active_role = $1 WHERE id = $2", role, userID)
+	return err
 }

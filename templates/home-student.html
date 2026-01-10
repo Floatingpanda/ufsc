@@ -1,44 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     {{ template "head" . }}
+  </head>
 
-</head>
-
-<body>
+  <body>
     {{template "nav" .Name}}
 
     <main>
-
-        <div class="container">
-            <div class="ads-container center" style="height: 300px;">
-                <h3>Annonsering</h3>
-            </div>
-
+      <div class="container">
+        <div class="ads-container center" style="height: 300px">
+          <h3>Annonsering</h3>
         </div>
+      </div>
 
-        <div class="blue-section center" style="padding: 30px 20px">
-            <div class="section-content">
-                <h1>Hitta studiecoach</h1>
-                <h3 class="view-row">Det är superenkelt och tar bara några minuter!</h3>
-            </div>
-            <img src="/static/images/app/squiggle-arrow.png" style="left: -200px; margin-right: 400px;">
-
-            <a href="/lesson/new" style="margin-top: 20px;">
-                <p class="header-squiggle2">Klicka här för att sätta igång!</p>
-            </a>
+      <div class="blue-section center" style="padding: 30px 20px">
+        <div class="section-content">
+          <h1>Hitta studiecoach</h1>
+          <h3 class="view-row">Det är superenkelt och tar bara några minuter!</h3>
         </div>
+        <img src="/static/images/app/squiggle-arrow.png" style="left: -200px; margin-right: 400px" />
 
-        <div class="container">
-            <div class="center" style="padding: 40px 0px;">
-                <h1 class="color-primary">Mina skickade förfrågningar</h1>
-            </div>
+        <a href="/lesson/new" style="margin-top: 20px">
+          <p class="header-squiggle2">Klicka här för att sätta igång!</p>
+        </a>
+      </div>
 
+      <div class="container">
+        <div class="center" style="padding: 40px 0px">
+          <h1 class="color-primary">Mina skickade förfrågningar</h1>
         </div>
-
+      </div>
     </main>
 
     {{ template "footer" . }}
-
-</body>
+  </body>
+</html>

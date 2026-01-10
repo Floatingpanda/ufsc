@@ -21,10 +21,10 @@ a {
 }
 
 p {
-    font-size: 20px;
     margin: 5px 0px;
     padding: 0;
 }
+
 
 body {
     margin: 0;
@@ -655,10 +655,18 @@ a.view-btn {
     width: 90%;
 }
 
+.center-container {
+    margin: auto;
+    text-align: center;
+}
+
 .center-items {
     align-items: center;
 }
 
+.center-align {
+    align-content: center;
+}
 
 .group-column-third {
     float: left;
@@ -1139,4 +1147,9 @@ a.view-btn {
 
 .border-white {
     border-color: #fff;
+}
+
+
+.profile-picture {
+    border-radius: 100px;
 }

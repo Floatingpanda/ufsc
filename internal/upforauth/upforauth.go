@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"upforschool/internal/model"
 
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
@@ -216,7 +217,7 @@ func (t *Token) Valid() bool {
 	return dur.Hours() <= 24
 }
 
-func (s *Service) addUser(firstname, lastname, email, phone, password string, ssn *string, smsOptIn bool) (string, error) {
+func (s *Service) addUser(firstname, lastname, email, phone, password string, ssn *string, smsOptIn bool, activeRole string) (string, error) {
 	email = strings.ToLower(email)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -230,10 +231,10 @@ func (s *Service) addUser(firstname, lastname, email, phone, password string, ss
 	}
 
 	query := `
-	INSERT INTO users ( id, first_name, last_name, email, phone, password, ssn, sms_opt_in) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	INSERT INTO users ( id, first_name, last_name, email, phone, password, ssn, sms_opt_in, active_role) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
-	_, err = s.db.Exec(query, userID, firstname, lastname, email, phone, hash, ssn, smsOptIn)
+	_, err = s.db.Exec(query, userID, firstname, lastname, email, phone, hash, ssn, smsOptIn, activeRole)
 	if err != nil {
 		return emptyID, err
 	}
@@ -301,8 +302,8 @@ func (s *Service) TokenByID(id string) (*Token, error) {
 }
 
 // AddUser to auth.
-func (s *Service) AddUser(firstname, lastname, email, phone, password string, ssn *string, smsOptIn bool) (*Token, error) {
-	userID, err := s.addUser(firstname, lastname, email, phone, password, ssn, smsOptIn)
+func (s *Service) AddUser(firstname, lastname, email, phone, password string, ssn *string, smsOptIn bool, activeRole model.ActiveRole) (*Token, error) {
+	userID, err := s.addUser(firstname, lastname, email, phone, password, ssn, smsOptIn, string(activeRole))
 	if err != nil {
 		return nil, err
 	}

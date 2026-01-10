@@ -55,6 +55,10 @@ func (a *App) routes() {
 
 	// a.router.HandleFunc("/home", a.handleAuth(a.handleHome()))
 
+	r.HandleFunc("/policy", a.page("policy.html"))
+	r.HandleFunc("/terms", a.page("terms.html"))
+	r.HandleFunc("/cookies", a.page("cookies.html"))
+
 	// bankid handlers
 	r.HandleFunc("/bankid/start", corsMiddleware(startAuthHandler))
 	r.HandleFunc("/bankid/collect", corsMiddleware(a.collectAuthHandler))
@@ -69,9 +73,10 @@ func (a *App) routes() {
 	r.HandleFunc("/signup-tutor", a.handleSignupTutor())
 	r.HandleFunc("/auth/confirm/", a.handleConfirm())
 
+	r.HandleFunc("/role/switch", a.handleAuth(a.handleSwitchRole))
 	r.HandleFunc("/profile", a.handleAuth(a.handleProfile))
 
-	r.HandleFunc("/lessons/new", a.handleAuth(a.handleNewLesson))
+	r.HandleFunc("/lesson/new", a.handleAuth(a.handleNewLesson))
 
 	r.HandleFunc("GET /list/tutors", a.handleAuth(a.handleGetTutors))
 

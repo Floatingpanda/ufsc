@@ -11,6 +11,13 @@ const (
 	ContextKeyTutor   ContextKey = "tutor"
 )
 
+type ActiveRole string
+
+const (
+	ActiveRoleStudent ActiveRole = "STUDENT"
+	ActiveRoleTutor   ActiveRole = "TUTOR"
+)
+
 type Location struct {
 	ID   int64  `db:"id" json:"id"`
 	Name string `db:"name" json:"name"`
@@ -35,6 +42,7 @@ type User struct {
 	SMSOptIn      bool   `db:"sms_opt_in" json:"sms_opt_in"`
 	Status        string `db:"status" json:"status"`
 	CookieConsent string `db:"cookie_consent" json:"cookie_consent"`
+	ActiveRole    string `db:"active_role" json:"active_role"`
 	IsAdmin       bool   `db:"is_admin" json:"is_admin"`
 }
 
@@ -43,7 +51,7 @@ type Tutor struct {
 	UserID        string    `db:"user_id"`
 	Image         string    `db:"image"`
 	OnlineLessons bool      `db:"online_lessons"`
-	Description   string    `db:"description"`
+	Bio           string    `db:"description"`
 	CreatedAt     time.Time `db:"created_at"`
 	UpdatedAt     time.Time `db:"updated_at"`
 
@@ -56,7 +64,7 @@ type TutorView struct {
 	UserID        string    `db:"user_id"`
 	Image         string    `db:"image"`
 	OnlineLessons bool      `db:"online_lessons"`
-	Description   string    `db:"description"`
+	Bio           string    `db:"description"`
 	CreatedAt     time.Time `db:"created_at"`
 	UpdatedAt     time.Time `db:"updated_at"`
 	FirstName     string    `db:"first_name" json:"first_name"`

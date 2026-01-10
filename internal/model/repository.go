@@ -15,7 +15,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 }
 
 func (r *Repository) User(id string) (*User, error) {
-	query := "SELECT id, first_name, last_name, email, phone, sms_opt_in, status, is_admin FROM users WHERE id = $1"
+	query := "SELECT id, first_name, last_name, email, phone, sms_opt_in, status, active_role,is_admin FROM users WHERE id = $1"
 	var u User
 	if err := r.db.Get(&u, query, id); err != nil {
 		return nil, err
