@@ -13,6 +13,7 @@ import (
 	"time"
 	"upforschool/internal/model"
 	"upforschool/internal/upforauth"
+	"upforschool/internal/viewer"
 )
 
 func (a *App) handleIsLoggedIn(next http.HandlerFunc) http.HandlerFunc {
@@ -146,6 +147,10 @@ func (a *App) tutor(r *http.Request) model.Tutor {
 	return r.Context().Value(model.ContextKeyTutor).(model.Tutor)
 }
 
+func (a *App) activeTutor(r *http.Request) bool {
+	return a.profile(r).User.ActiveRole == string(model.ActiveRoleTutor)
+}
+
 func (a *App) page(name string) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -158,8 +163,23 @@ func (a *App) page(name string) http.HandlerFunc {
 }
 
 func (a *App) homeHandler(w http.ResponseWriter, r *http.Request) {
-	page := a.view.Page("home-student.html")
-	page.Add("Profile", a.profile(r))
+
+	LessonRequests, err := a.repo.SentLessonRequests(a.profile(r).User.ID)
+	if err != nil {
+		log.Println("failed to get lesson requests:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var page *viewer.Page
+	if a.activeTutor(r) {
+		page = a.view.Page("home-tutor.html")
+	} else {
+		page = a.view.Page("home-student.html")
+	}
+
+	page.Add("Profile", a.profile(r)).
+		Add("LessonRequests", LessonRequests)
 
 	if err := a.view.Execute(w, page); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -240,7 +260,7 @@ func (a *App) handleLogin() http.HandlerFunc {
 				}
 
 				tutorProfile, err := a.repo.TutorByUserID(user.ID)
-				if err != sql.ErrNoRows {
+				if err != nil && err != sql.ErrNoRows {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
@@ -349,10 +369,13 @@ func (a *App) handleSignupStudent() http.HandlerFunc {
 				return
 			}
 
+			showAllLessons := r.URL.Query().Get("lessons") == "all"
+
 			page := a.view.Page("signup-student.html").
 				Add("Subjects", subjects).
 				Add("Levels", levels).
-				Add("Locations", locations)
+				Add("Locations", locations).
+				Add("AllLessons", showAllLessons)
 
 			if err := a.view.Execute(w, page); err != nil {
 				log.Printf("handleSignup: %v", err)
@@ -391,7 +414,7 @@ func (a *App) handleSignupStudent() http.HandlerFunc {
 			}
 
 			// log.Println("signup attempt", token.UserEmail, token.ID, token.Value, add.Language)
-			go a.email.SendSignupCode(token.UserEmail, token.ID, token.Value)
+			go a.email.SendActivationEmail(firstname, token.UserEmail, token.ID, token.Value)
 
 			http.Redirect(w, r, "/auth/confirm/"+token.ID, http.StatusFound)
 		default:
@@ -447,6 +470,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 			description := r.FormValue("description")
 			smsOptIn := r.FormValue("sms-opt-in")
 			bidToken := r.FormValue("bid-token")
+			alias := r.FormValue("alias")
 
 			log.Println("phone", phone)
 			log.Println("email", email)
@@ -482,6 +506,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 
 			tutorID, err := a.core.AddTutor(model.Tutor{
 				UserID:        token.UserID,
+				Alias:         alias,
 				OnlineLessons: onlineLessons == "on",
 				Bio:           description,
 			}, locations, subjects, levels)
@@ -500,8 +525,7 @@ func (a *App) handleSignupTutor() http.HandlerFunc {
 				}
 			}
 
-			// log.Println("signup attempt", token.UserEmail, token.ID, token.Value, add.Language)
-			go a.email.SendSignupCode(token.UserEmail, token.ID, token.Value)
+			go a.email.SendActivationEmail(firstname, token.UserEmail, token.ID, token.Value)
 
 			http.Redirect(w, r, "/auth/confirm/"+token.ID, http.StatusFound)
 		default:
@@ -671,6 +695,8 @@ func (a *App) handleNewLesson(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodPost:
+
+		log.Println("handleNewLesson: post")
 		var req model.LessonRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, "invalid json", http.StatusBadRequest)
@@ -705,6 +731,8 @@ func (a *App) handleGetTutors(w http.ResponseWriter, r *http.Request) {
 	levelIDInt, _ := strconv.Atoi(levelID)
 	locationIDInt, _ := strconv.Atoi(locationID)
 
+	log.Println("Getting tutors")
+
 	tutors, err := a.repo.Tutors(onlineLessonsBool, int(locationIDInt), int(subjectIDInt), int(levelIDInt))
 	if err != nil {
 		log.Println(err)
@@ -722,4 +750,252 @@ func (a *App) handleGetTutors(w http.ResponseWriter, r *http.Request) {
 		log.Printf("handleGetTutors: %v", err)
 	}
 
+}
+
+func (a *App) handleListLessons(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	var lessonRequests []model.LessonView
+	if a.activeTutor(r) {
+		lessonRequests, err = a.repo.ReceivedLessonRequests(a.tutor(r).ID)
+		if err != nil {
+			log.Println("failed to get lesson requests:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		lessonRequests, err = a.repo.SentLessonRequests(a.profile(r).User.ID)
+		if err != nil {
+			log.Println("failed to get lesson requests:", err)
+		}
+	}
+
+	// Remove deleted lessons unless "lessons=all" is set
+	// also remove old accepted lessons
+	showAllLessons := r.URL.Query().Get("lessons") == "all"
+	if !showAllLessons {
+		filteredLessons := []model.LessonView{}
+		for _, lr := range lessonRequests {
+			if lr.DeletedAt.Valid ||
+				lr.AcceptedAt.Valid && lr.AcceptedAt.Time.Add(7*24*time.Hour).Before(time.Now()) { // accepted more than 7 days ago
+				continue
+			}
+			filteredLessons = append(filteredLessons, lr)
+		}
+		lessonRequests = filteredLessons
+	}
+
+	log.Println("AT", a.activeTutor(r))
+	page := a.view.
+		Page("home-lessons-partial.html").
+		Add("IsTutor", a.activeTutor(r)).
+		Add("Lessons", lessonRequests).
+		Add("ShowAllLessons", showAllLessons)
+
+	if err := a.view.Execute(w, page); err != nil {
+		log.Printf("handleListLessons: %v", err)
+	}
+
+}
+
+func (a *App) handleLessonAccept(w http.ResponseWriter, r *http.Request) {
+
+	if !a.activeTutor(r) {
+		http.Error(w, "only tutors can accept lessons", http.StatusForbidden)
+	}
+
+	lessonID := r.URL.Query().Get("lesson_id")
+	l, err := a.repo.GetLesson(lessonID)
+	if err != nil {
+		log.Println("handleLessonAccept: unable to fetch lesson:", err)
+		http.Error(w, "unable to fetch lesson", http.StatusInternalServerError)
+		return
+	}
+
+	tutor := a.tutor(r)
+	log.Println("rs", tutor.OnlineLessons)
+	log.Println(
+		l.OnlineLesson, l.LocationID, l.SubjectID, l.LevelID,
+	)
+
+	if !tutor.MeetsRequirements(l.OnlineLesson, l.LocationID, l.SubjectID, l.LevelID) {
+		http.Error(w, "tutor does not meet lesson requirements", http.StatusForbidden)
+		return
+	}
+
+	_, err = a.core.AcceptLesson(lessonID, tutor.ID)
+	if err != nil {
+		log.Println("handleLessonAccept: unable to accept lesson:", err)
+		http.Error(w, "unable to accept lesson", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("lesson accepted", lessonID, "by tutor", tutor.ID)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func (a *App) handleLessonDelete(w http.ResponseWriter, r *http.Request) {
+	user := a.profile(r)
+
+	lessonID := r.URL.Query().Get("lesson_id")
+	l, err := a.repo.GetLesson(lessonID)
+	if err != nil {
+		log.Println("handleLessonDelete: unable to fetch lesson:", err)
+		http.Error(w, "unable to fetch lesson", http.StatusInternalServerError)
+		return
+	}
+
+	if l.StudentID != user.User.ID {
+		http.Error(w, "only the student who created the lesson can delete it", http.StatusForbidden)
+		return
+	}
+
+	err = a.core.DeleteLesson(lessonID)
+	if err != nil {
+		log.Println("handleLessonDelete: unable to delete lesson:", err)
+		http.Error(w, "unable to delete lesson", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("lesson deleted", lessonID, "by student", user.User.ID)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func (a *App) handleGetTutorSummary(w http.ResponseWriter, r *http.Request) {
+	tutorID := r.URL.Query().Get("tutor_id")
+
+	tutor, err := a.repo.Tutor(tutorID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Unable to fetch tutor", http.StatusInternalServerError)
+		return
+	}
+
+	user, err := a.repo.User(tutor.UserID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Unable to fetch tutor user", http.StatusInternalServerError)
+		return
+	}
+
+	tutorView := model.TutorView{
+		ID:            tutorID,
+		UserID:        user.ID,
+		Image:         tutor.Image,
+		OnlineLessons: tutor.OnlineLessons,
+		Bio:           tutor.Bio,
+		CreatedAt:     tutor.CreatedAt,
+		UpdatedAt:     tutor.UpdatedAt,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		Phone:         user.Phone,
+		SMSOptIn:      user.SMSOptIn,
+		Status:        user.Status,
+	}
+
+	page := a.view.
+		Page("tutor-summary-partial.html").
+		Add("Tutor", tutorView)
+
+	if err := a.view.Execute(w, page); err != nil {
+		log.Printf("handleGetTutors: %v", err)
+	}
+
+}
+
+func (a *App) handleProfilesEdit() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			p := a.profile(r)
+			t := a.tutor(r)
+
+			subjects, err := a.repo.Subjects()
+			if err != nil {
+				http.Error(w, "Unable to fetch subjects", http.StatusInternalServerError)
+				return
+			}
+			for i := range subjects {
+				for _, ts := range t.Subjects {
+					if subjects[i].ID == ts.ID {
+						subjects[i].Selected = true
+					}
+				}
+			}
+
+			levels, err := a.repo.Levels()
+			if err != nil {
+				http.Error(w, "Unable to fetch levels", http.StatusInternalServerError)
+				return
+			}
+			for i := range levels {
+				for _, ts := range t.Levels {
+					if levels[i].ID == ts.ID {
+						levels[i].Selected = true
+					}
+				}
+			}
+
+			locations, err := a.repo.Locations()
+			if err != nil {
+				http.Error(w, "Unable to fetch locations", http.StatusInternalServerError)
+				return
+			}
+			for i := range locations {
+				for _, ts := range t.Locations {
+					if locations[i].ID == ts.ID {
+						locations[i].Selected = true
+					}
+				}
+			}
+
+			page := a.view.Page("profiles-edit.html").
+				Add("Profile", p).
+				Add("Tutor", t).
+				Add("Subjects", subjects).
+				Add("Levels", levels).
+				Add("Locations", locations)
+
+			if err := a.view.Execute(w, page); err != nil {
+				log.Printf("handleProfilesEdit: %v", err)
+			}
+		}
+		// case http.MethodPost:
+		// 	profile := a.profile(r)
+
+		// 	if err := r.ParseForm(); err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+
+		// 	// individual instructors cannot change their year, firstname or lastname.
+		// 	if profile.ProfileRole == "INSTRUCTOR" && !profile.ProfileIsOrg {
+		// 		r.Form.Set("year", strconv.Itoa(int(profile.ProfileYear)))
+		// 		r.Form.Set("firstname", profile.ProfileFirstname)
+		// 		r.Form.Set("lastname", profile.ProfileLastname)
+		// 	}
+
+		// 	update, err := service.ParseUpdateProfileRequest(r.Form)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+
+		// 	if profile.ProfileID != update.ID {
+		// 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		// 		return
+		// 	}
+
+		// 	if err := a.svc.UpdateProfile(update); err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+
+		// 	http.Redirect(w, r, "/profiles", http.StatusFound)
+		// default:
+		// 	http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		// 	return
+		// }
+	}
 }

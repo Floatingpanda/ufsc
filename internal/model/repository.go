@@ -42,11 +42,42 @@ func (r *Repository) Tutor(id string) (*Tutor, error) {
 }
 
 func (r *Repository) TutorByUserID(userID string) (*Tutor, error) {
-	query := "SELECT id, user_id, description, image FROM tutors WHERE user_id = $1"
+	query := "SELECT id, user_id, alias, online_lessons, description, image FROM tutors WHERE user_id = $1"
 	var t Tutor
 	if err := r.db.Get(&t, query, userID); err != nil {
 		return nil, err
 	}
+
+	err := r.db.Select(&t.Subjects, `
+		SELECT s.id, s.name
+		  FROM tutor_subjects AS ts
+		  JOIN subjects AS s ON ts.subject_id = s.id
+		 WHERE ts.tutor_id = $1
+	`, t.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.Select(&t.Levels, `
+		SELECT l.id, l.name
+		  FROM tutor_levels AS tl
+		  JOIN levels AS l ON tl.level_id = l.id
+		 WHERE tl.tutor_id = $1
+	`, t.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.Select(&t.Locations, `
+		SELECT loc.id, loc.name
+		  FROM tutor_locations AS tl
+		  JOIN locations AS loc ON tl.location_id = loc.id
+		 WHERE tl.tutor_id = $1
+	`, t.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &t, nil
 }
 
@@ -71,7 +102,7 @@ func (r *Repository) Levels() ([]Level, error) {
 }
 
 func (r *Repository) Locations() ([]Location, error) {
-	query := "SELECT id, name FROM locations"
+	query := "SELECT id, name FROM locations where id > 0"
 	var result []Location
 	if err := r.db.Select(&result, query); err != nil {
 		return nil, err
@@ -85,6 +116,7 @@ func (r *Repository) AllTutors() ([]TutorView, error) {
 		SELECT 
 			t.id,
 			t.user_id,
+			t.alias,
 			t.image,
 			t.location_id,
 			t.online_lessons,
@@ -112,6 +144,7 @@ func (r *Repository) Tutors(online_lessons bool, locationID, subjectID, levelID 
 		SELECT DISTINCT
 			t.id,
 			t.user_id,
+			t.alias,
 			t.image,
 			t.online_lessons,
 			t.description,
@@ -139,3 +172,121 @@ func (r *Repository) Tutors(online_lessons bool, locationID, subjectID, levelID 
 
 	return result, nil
 }
+
+func (r *Repository) SentLessonRequests(userID string) ([]LessonView, error) {
+
+	var result []LessonView
+	query := `
+	SELECT 
+		l.id as id,
+		l.student_id as student_id,
+		u.first_name as student_name,	
+		l.subject_id as subject_id,
+		l.level_id as level_id,
+		l.location_id as location_id,
+		l.online_lesson as online_lesson,
+		l.title as title,
+		l.description as description,
+		l.tutor_id as tutor_id,
+		l.created_at as created_at,
+		l.updated_at as updated_at,
+		s."name" as subject_name,
+		lvl."name" as level_name,
+		loc."name" as location_name,
+		COALESCE(req.status, 'PENDING') as booked_status,
+		req.accepted_at as accepted_at,
+		l.deleted_at as deleted_at
+	FROM lessons AS l
+		JOIN users AS u ON l.student_id = u.id 
+		JOIN subjects as s on l.subject_id = s.id
+		JOIN levels as lvl on l.level_id = lvl.id 
+		JOIN locations as loc on l.location_id = loc.id 
+		LEFT JOIN lesson_requests as req on l.id = req.lesson_id AND req.status = 'ACCEPTED'
+	WHERE l.student_id = $1 
+	`
+
+	if err := r.db.Select(&result, query, userID); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (r *Repository) ReceivedLessonRequests(tutorID string) ([]LessonView, error) {
+	var result []LessonView
+	query := `
+	SELECT 
+		l.id as id,
+		l.student_id as student_id,
+		u.first_name as student_name,
+		l.subject_id as subject_id,
+		l.level_id as level_id,
+		l.location_id as location_id,
+		l.online_lesson as online_lesson,
+		l.title as title,
+		l.description as description,
+		l.tutor_id as tutor_id,
+		l.created_at as created_at,
+		l.updated_at as updated_at,
+		s."name" as subject_name,
+		lvl."name" as level_name,
+		loc."name" as location_name,
+		COALESCE(req.status, 'PENDING') as booked_status,
+		req.accepted_at as accepted_at
+	FROM lessons AS l
+		JOIN users AS u ON l.student_id = u.id 
+		JOIN subjects as s on l.subject_id = s.id
+		JOIN levels as lvl on l.level_id = lvl.id 
+		JOIN locations as loc on l.location_id = loc.id 
+		JOIN lesson_requests as req on l.id = req.lesson_id
+	WHERE req.tutor_id = $1
+	AND (req.status = 'PENDING' OR l.tutor_id = $1)
+	AND l.deleted_at IS NULL
+	`
+
+	if err := r.db.Select(&result, query, tutorID); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (r *Repository) GetLesson(lessonID string) (*LessonView, error) {
+
+	var result LessonView
+	query := `
+	SELECT 
+		l.id as id,
+		l.student_id as student_id,
+		u.first_name as student_name,	
+		l.subject_id as subject_id,
+		l.level_id as level_id,
+		l.location_id as location_id,
+		l.online_lesson as online_lesson,
+		l.title as title,
+		l.description as description,
+		l.tutor_id as tutor_id,
+		l.created_at as created_at,
+		l.updated_at as updated_at,
+		s."name" as subject_name,
+		lvl."name" as level_name,
+		loc."name" as location_name,
+		COALESCE(req.status, 'PENDING') as booked_status,
+		req.accepted_at as accepted_at,
+		l.deleted_at as deleted_at
+	FROM lessons AS l
+		JOIN users AS u ON l.student_id = u.id 
+		JOIN subjects as s on l.subject_id = s.id
+		JOIN levels as lvl on l.level_id = lvl.id 
+		JOIN locations as loc on l.location_id = loc.id 
+		LEFT JOIN lesson_requests as req on l.id = req.lesson_id AND req.status = 'ACCEPTED'
+	WHERE l.id = $1 
+	`
+
+	if err := r.db.Get(&result, query, lessonID); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// func (c *Core) ReceivedLessonRequests(userID string) (string, error) {
+
+// }

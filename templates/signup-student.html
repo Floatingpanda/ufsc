@@ -1,236 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     {{ template "head" . }}
 
     <link rel="stylesheet" href="{{.Props.Static}}/vendor/choices/choices.min.css" />
     <script src="{{.Props.Static}}/vendor/choices/choices.min.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     {{template "nav-public" .}}
 
-    <div class="split-page ">
-        <div class="hide-on-small blue-section pattern-section center"
-            style="height: calc(100vh - 100px); position: sticky; top: 100px;">
-            <img src=" {{.Props.Static}}/images/app/student-icon.png" alt="Elev Icon"
-                style="width: 50px; margin-bottom: 20px;">
-            <h1>Elev</h1>
-        </div>
+    <div class="split-page">
+      <div class="hide-on-small blue-section pattern-section center" style="height: calc(100vh - 100px); position: sticky; top: 100px">
+        <img src=" {{.Props.Static}}/images/app/student-icon.png" alt="Elev Icon" style="width: 50px; margin-bottom: 20px" />
+        <h1>Elev</h1>
+      </div>
 
-        <div id="signup-form" class="split-page-right">
-            <div class="container">
-                <h1 class=" view-row color-primary">Skapa ett konto!</h1>
-                <form action="/signup-student" method="post" enctype="multipart/form-data">
-                    <input type="hidden" id="token" name="bid-token">
-                    <input type="hidden" id="ssn" name="ssn">
+      <div id="signup-form" class="split-page-right">
+        <div class="container">
+          <h1 class="view-row color-primary">Skapa ett konto!</h1>
+          <form action="/signup-student" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="token" name="bid-token" />
+            <input type="hidden" id="ssn" name="ssn" />
 
-                    <label class="form-label bolder">Förnamn</label>
-                    <input id="first-name" name="first-name" class="form-input" required>
+            <label class="form-label bolder">Förnamn</label>
+            <input id="first-name" name="first-name" class="form-input" required />
 
-                    <label class="form-label bolder">Efternamn</label>
-                    <input id="last-name" name="last-name" class="form-input" required>
+            <label class="form-label bolder">Efternamn</label>
+            <input id="last-name" name="last-name" class="form-input" required />
 
-                    <label class="form-label bolder">Mobilnummer</label>
-                    <input placeholder="+467XX XX XX XX" id="phone" name="phone" type="tel" class="form-input" required>
-                    <p class="opacity-50 text-small">Ditt mobilnummer kommer vara dolt i din profil</p>
+            <label class="form-label bolder">Mobilnummer</label>
+            <input placeholder="+467XX XX XX XX" id="phone" name="phone" type="tel" class="form-input" required />
+            <p class="opacity-50 text-small">Ditt mobilnummer kommer vara dolt i din profil</p>
 
+            <label class="form-label bolder">Email</label>
+            <input id="email" name="email" type="email" class="form-input" required />
+            <p class="opacity-50 text-small">Din email kommer vara dold på din profil</p>
 
-                    <label class="form-label bolder">Email</label>
-                    <input id="email" name="email" type="email" class="form-input" required>
-                    <p class="opacity-50 text-small">Din email kommer vara dold på din profil</p>
+            <label class="form-label bolder">Bekräfta Email</label>
+            <input id="confirm-email" name="confirm-email" type="email" class="form-input" required />
+            <span id="email-error" style="color: red; display: none; font-size: 14px; margin-top: 4px; display: none">E-postadresserna matchar inte</span>
+            <p class="opacity-50 text-small">Din email kommer vara dold på din profil</p>
 
+            <label class="form-label bolder">Lösenord</label>
+            <input placeholder="Välj ett starkt lösenord" id="password" name="password" type="password" class="form-input" required />
+            <p class="opacity-50 text-small">Ditt lösenord måste minst vara 8 tecken långt</p>
 
-                    <label class="form-label bolder">Bekräfta Email</label>
-                    <input id="confirm-email" name="confirm-email" type="email" class="form-input" required>
-                    <span id="email-error"
-                        style="color: red; display: none; font-size: 14px; margin-top: 4px; display: none;">E-postadresserna
-                        matchar inte</span>
-                    <p class="opacity-50 text-small">Din email kommer vara dold på din profil</p>
+            <label class="form-label bolder">Bekräfta lösenord</label>
+            <input placeholder="Välj ett starkt lösenord" id="confirm-password" name="confirm-password" type="password" class="form-input" required />
+            <span id="password-error" style="color: red; display: none; font-size: 14px; margin-top: 4px; display: none">Lösenorden matchar inte</span>
+            <p class="opacity-50 text-small">Ditt lösenord måste minst vara 8 tecken långt</p>
 
+            <div class="view-row-alt">
+              <div class="view-row-alt">
+                <div class="flex flex-start flex-nowrap">
+                  <input name="sms-opt-in" type="checkbox" class="form-checkbox" />
+                  <label class="text-light" style="width: 90%">Utöver att få information via email så vill jag också få information om bokningar via SMS</label>
+                </div>
+              </div>
 
-                    <label class="form-label bolder">Lösenord</label>
-                    <input placeholder="Välj ett starkt lösenord" id="password" name="password" type="password"
-                        class="form-input" required>
-                    <p class="opacity-50 text-small">Ditt lösenord måste minst vara 8 tecken långt</p>
-
-
-                    <label class="form-label bolder">Bekräfta lösenord</label>
-                    <input placeholder="Välj ett starkt lösenord" id="confirm-password" name="confirm-password"
-                        type="password" class="form-input" required>
-                    <span id="password-error"
-                        style="color: red; display: none; font-size: 14px; margin-top: 4px; display: none;">Lösenorden
-                        matchar inte</span>
-                    <p class="opacity-50 text-small">Ditt lösenord måste minst vara 8 tecken långt</p>
-
-
-
-
-
-                    <div class="view-row-alt">
-                        <div class="view-row-alt form-label">
-                            <label class="flex flex-start center-items">
-                                <input name="sms-opt-in" type="checkbox" class="form-checkbox">
-                                Jag vill få information om bokningar via SMS
-                            </label>
-                        </div>
-
-                        <div class="view-row-alt form-label">
-                            <label class="flex flex-start center-items">
-                                <input name="terms" type="checkbox" class="form-checkbox" required>
-                                Godkänn allmänna villkor
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="flex">
-                        <button class="view-btn view-btn-alt view-btn-extra-wide view-row-alt" type="submit">
-                            Nästa
-                        </button>
-                    </div>
-
-                    <p class="view-row-alt text-small center opacity-70">
-                        Information om hur vi behandlar dina personuppgifter kan du läsa mer om här Integritetspolicy
-                        <br><br><br>
-                        Har du frågor angående registreringen, kontakta oss
-                    </p>
-
-
-                    <div class="view-row-alt"></div>
-                </form>
+              <div class="view-row-alt">
+                <div class="flex flex-start center-items flex-nowrap">
+                  <input name="terms" type="checkbox" class="form-checkbox" required />
+                  <label class="text-light"> Godkänn <a href="/terms" class="text-underline"> allmänna villkor </a> </label>
+                </div>
+              </div>
             </div>
+
+            <div class="flex">
+              <button class="view-btn view-btn-alt view-btn-extra-wide view-row-alt" type="submit">Nästa</button>
+
+              <div class="text-light text-medium view-row view-center">
+                <p>Information om hur vi behandlar dina personuppgifter kan du läsa mer om här <a target="_blank" class="link text-underline" href="/policy">Integritetspolicy</a>.</p>
+              </div>
+
+              <div class="text-light text-medium view-row view-center">
+                <p>Har du frågor angående registreringen, kontakta oss.</p>
+                <a href="mailto:hej@upforschool.se?subject=Registrera%20studiecoach" class="view-btn view-btn-extra-wide view-row">Kontakta oss</a>
+              </div>
+            </div>
+
+            <div class="view-row-alt"></div>
+          </form>
         </div>
+      </div>
     </div>
 
-
     <script>
-        (function () {
-            // Form validation
-            const signupForm = document.querySelector('form');
-            if (!signupForm) return;
+      (function () {
+        // Form validation
+        const signupForm = document.querySelector("form");
+        if (!signupForm) return;
 
-            const emailInput = document.getElementById('email');
-            const confirmEmailInput = document.getElementById('confirm-email');
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirm-password');
-            const emailError = document.getElementById('email-error');
-            const passwordError = document.getElementById('password-error');
+        const emailInput = document.getElementById("email");
+        const confirmEmailInput = document.getElementById("confirm-email");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm-password");
+        const emailError = document.getElementById("email-error");
+        const passwordError = document.getElementById("password-error");
 
-            let formSubmitted = false;
+        let formSubmitted = false;
 
-            // Real-time validation for email (only after first submit)
-            if (confirmEmailInput && emailError) {
-                confirmEmailInput.addEventListener('input', function () {
-                    if (!formSubmitted) return;
-                    if (emailInput.value && confirmEmailInput.value) {
-                        if (emailInput.value !== confirmEmailInput.value) {
-                            emailError.style.display = 'block';
-                        } else {
-                            emailError.style.display = 'none';
-                        }
-                    }
-                });
-
-                emailInput.addEventListener('input', function () {
-                    if (!formSubmitted) return;
-                    if (emailInput.value && confirmEmailInput.value) {
-                        if (emailInput.value !== confirmEmailInput.value) {
-                            emailError.style.display = 'block';
-                        } else {
-                            emailError.style.display = 'none';
-                        }
-                    }
-                });
+        // Real-time validation for email (only after first submit)
+        if (confirmEmailInput && emailError) {
+          confirmEmailInput.addEventListener("input", function () {
+            if (!formSubmitted) return;
+            if (emailInput.value && confirmEmailInput.value) {
+              if (emailInput.value !== confirmEmailInput.value) {
+                emailError.style.display = "block";
+              } else {
+                emailError.style.display = "none";
+              }
             }
+          });
 
-            // Real-time validation for password (only after first submit)
-            if (confirmPasswordInput && passwordError) {
-                confirmPasswordInput.addEventListener('input', function () {
-                    if (!formSubmitted) return;
-                    if (passwordInput.value && confirmPasswordInput.value) {
-                        if (passwordInput.value !== confirmPasswordInput.value) {
-                            passwordError.textContent = 'Lösenorden matchar inte';
-                            passwordError.style.display = 'block';
-                        } else {
-                            passwordError.style.display = 'none';
-                        }
-                    }
-                });
-
-                passwordInput.addEventListener('input', function () {
-                    if (!formSubmitted) return;
-                    if (passwordInput.value && confirmPasswordInput.value) {
-                        if (passwordInput.value !== confirmPasswordInput.value) {
-                            passwordError.textContent = 'Lösenorden matchar inte';
-                            passwordError.style.display = 'block';
-                        } else {
-                            passwordError.style.display = 'none';
-                        }
-                    }
-                    // Check password length
-                    if (passwordInput.value.length > 0 && passwordInput.value.length < 8) {
-                        passwordError.textContent = 'Lösenordet måste vara minst 8 tecken långt';
-                        passwordError.style.display = 'block';
-                    } else if (passwordInput.value === confirmPasswordInput.value) {
-                        passwordError.style.display = 'none';
-                    }
-                });
+          emailInput.addEventListener("input", function () {
+            if (!formSubmitted) return;
+            if (emailInput.value && confirmEmailInput.value) {
+              if (emailInput.value !== confirmEmailInput.value) {
+                emailError.style.display = "block";
+              } else {
+                emailError.style.display = "none";
+              }
             }
+          });
+        }
 
-            // Form submit validation
-            signupForm.addEventListener('submit', function (event) {
-                formSubmitted = true;
-                let isValid = true;
+        // Real-time validation for password (only after first submit)
+        if (confirmPasswordInput && passwordError) {
+          confirmPasswordInput.addEventListener("input", function () {
+            if (!formSubmitted) return;
+            if (passwordInput.value && confirmPasswordInput.value) {
+              if (passwordInput.value !== confirmPasswordInput.value) {
+                passwordError.textContent = "Lösenorden matchar inte";
+                passwordError.style.display = "block";
+              } else {
+                passwordError.style.display = "none";
+              }
+            }
+          });
 
-                // Check if emails match
-                if (emailInput && confirmEmailInput) {
-                    if (emailInput.value !== confirmEmailInput.value) {
-                        if (emailError) emailError.style.display = 'block';
-                        isValid = false;
-                    } else {
-                        if (emailError) emailError.style.display = 'none';
-                    }
-                }
+          passwordInput.addEventListener("input", function () {
+            if (!formSubmitted) return;
+            if (passwordInput.value && confirmPasswordInput.value) {
+              if (passwordInput.value !== confirmPasswordInput.value) {
+                passwordError.textContent = "Lösenorden matchar inte";
+                passwordError.style.display = "block";
+              } else {
+                passwordError.style.display = "none";
+              }
+            }
+            // Check password length
+            if (passwordInput.value.length > 0 && passwordInput.value.length < 8) {
+              passwordError.textContent = "Lösenordet måste vara minst 8 tecken långt";
+              passwordError.style.display = "block";
+            } else if (passwordInput.value === confirmPasswordInput.value) {
+              passwordError.style.display = "none";
+            }
+          });
+        }
 
-                // Check if passwords match
-                if (passwordInput && confirmPasswordInput) {
-                    if (passwordInput.value !== confirmPasswordInput.value) {
-                        if (passwordError) {
-                            passwordError.textContent = 'Lösenorden matchar inte';
-                            passwordError.style.display = 'block';
-                        }
-                        isValid = false;
-                    } else {
-                        if (passwordError) passwordError.style.display = 'none';
-                    }
-                }
+        // Form submit validation
+        signupForm.addEventListener("submit", function (event) {
+          formSubmitted = true;
+          let isValid = true;
 
-                // Check password length
-                if (passwordInput && passwordInput.value.length < 8) {
-                    if (passwordError) {
-                        passwordError.textContent = 'Lösenordet måste vara minst 8 tecken långt';
-                        passwordError.style.display = 'block';
-                    }
-                    isValid = false;
-                }
+          // Check if emails match
+          if (emailInput && confirmEmailInput) {
+            if (emailInput.value !== confirmEmailInput.value) {
+              if (emailError) emailError.style.display = "block";
+              isValid = false;
+            } else {
+              if (emailError) emailError.style.display = "none";
+            }
+          }
 
-                // Prevent form submission if validation fails
-                if (!isValid) {
-                    event.preventDefault();
+          // Check if passwords match
+          if (passwordInput && confirmPasswordInput) {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+              if (passwordError) {
+                passwordError.textContent = "Lösenorden matchar inte";
+                passwordError.style.display = "block";
+              }
+              isValid = false;
+            } else {
+              if (passwordError) passwordError.style.display = "none";
+            }
+          }
 
-                    // Scroll to first error
-                    if (emailInput && confirmEmailInput && emailInput.value !== confirmEmailInput.value && emailError) {
-                        emailError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    } else if (passwordInput && confirmPasswordInput && passwordInput.value !== confirmPasswordInput.value && passwordError) {
-                        passwordError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
-            });
-        })();
+          // Check password length
+          if (passwordInput && passwordInput.value.length < 8) {
+            if (passwordError) {
+              passwordError.textContent = "Lösenordet måste vara minst 8 tecken långt";
+              passwordError.style.display = "block";
+            }
+            isValid = false;
+          }
+
+          // Prevent form submission if validation fails
+          if (!isValid) {
+            event.preventDefault();
+
+            // Scroll to first error
+            if (emailInput && confirmEmailInput && emailInput.value !== confirmEmailInput.value && emailError) {
+              emailError.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else if (passwordInput && confirmPasswordInput && passwordInput.value !== confirmPasswordInput.value && passwordError) {
+              passwordError.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }
+        });
+      })();
     </script>
 
-    {{template "cookie-consent" .}}
-</body>
-
+    {{ template "footer" . }} {{template "cookie-consent" .}}
+  </body>
 </html>

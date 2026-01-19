@@ -1,0 +1,54 @@
+<div class="view-row-alt">
+  <div class="two-cols gap-16" style="max-width: 1000px; margin: auto">
+    {{ range .Data.Lessons }}
+
+    <div x-data="{ open: false }">
+      <div class="list-item" @click="open = true">
+        <div>
+          <img class="list-icon" src="/static/images/subjects/{{icons .SubjectName }}" alt="{{ .SubjectName }}" />
+          <!-- <p class="list-text text-strong">{{ .Title }}</p> -->
+          <p class="list-text text-strong">{{ .StudentName }} söker {{ .SubjectName }}-studiecoach</p>
+          <p class="list-text">{{ if .OnlineLesson }}Online Hjälp{{ else }}Fysisk Träff{{ end }}</p>
+          <p class="list-text text-light">{{ if eq .BookedStatus "ACCEPTED" }}Bokad{{ else }}Ej Bokad{{ end }}</p>
+        </div>
+      </div>
+
+      <!-- Overlay -->
+      <div>
+        <div class="overlay" x-show="open" x-transition>
+          <div class="overlay-inner rounded-container" style="background-color: white" @click.outside="open = false">
+            <div class="overlay-closer" @click="open = false">
+              <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="black" fill-opacity="0.9"></circle>
+                <path d="M24.1649 12.516C25.0021 11.6787 26.3596 11.6787 27.1968 12.516V12.516C28.0341 13.3532 28.0341 14.7107 27.1968 15.5479L15.5479 27.1968C14.7107 28.0341 13.3532 28.0341 12.516 27.1968V27.1968C11.6787 26.3596 11.6787 25.0021 12.516 24.1649L24.1649 12.516Z" fill="white"></path>
+                <rect width="4.2878" height="20.7619" rx="2.1439" transform="matrix(-0.707107 0.707107 0.707107 0.707107 14.032 11)" fill="white"></rect>
+              </svg>
+            </div>
+
+            <div class="text-box color-black">
+              <h2>{{ .Title }}</h2>
+
+              <p class="list-text text-light">{{ if eq .BookedStatus "ACCEPTED" }}Bokad{{ else }}Ej Bokad{{ end }}</p>
+              <p class="view-row">{{ .Description }}</p>
+
+              <div class="view-row-alt">
+                <div class="flex flex-row gap-8 flex-start">
+                  <div class="view-btn">{{ .SubjectName }}</div>
+                  <div class="view-btn">{{ .LevelName }}</div>
+                  <div class="view-btn">{{ .LocationName }}</div>
+                </div>
+              </div>
+
+              {{if not .DeletedAt.Valid}} {{if not .AcceptedAt.Valid}} {{ if $.Data.IsTutor }}
+              <div class="view-row-alt"><a href="/lesson/accept?lesson_id={{ .ID }}" class="view-btn view-btn-green view-btn-wide"> Acceptera </a></div>
+              {{else}}
+              <div class="view-row-alt"><a href="/lessons/edit?lesson_id={{ .ID }}" class="view-btn view-btn-red view-btn-wide"> Ändra </a></div>
+              {{ end }} {{ end }} {{ end }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</div>

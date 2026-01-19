@@ -1,227 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <link rel="stylesheet" href="{{.Props.Static}}/vendor/choices/choices.min.css" />
     <script src="{{.Props.Static}}/vendor/choices/choices.min.js"></script>
 
     {{ template "head" . }}
+  </head>
 
-</head>
-
-<body>
+  <body>
     {{template "nav-public" .}}
 
-    <div class="split-page ">
-        <div class="hide-on-small blue-section pattern-section center"
-            style="height: calc(100vh - 100px); position: sticky; top: 100px;">
-            <h1>Studiecoach</h1>
-        </div>
+    <div class="split-page">
+      <div class="hide-on-small blue-section pattern-section center" style="height: calc(100vh - 100px); position: sticky; top: 100px">
+        <h1>Studiecoach</h1>
+      </div>
 
-        {{template "signup-bankid" .}}
+      {{template "signup-bankid" .}}
 
-        <div id="signup-form" class="split-page-right" style="display: none;">
-            <div class="container">
-                <h1 class=" view-row color-primary">Skapa ett konto!</h1>
-                <form action="/signup-tutor" method="post" enctype="multipart/form-data">
-                    <input type="hidden" id="token" name="bid-token">
-                    <input type="hidden" id="ssn" name="ssn">
+      <div id="signup-form" class="split-page-right" style="display: none">
+        <div class="container">
+          <h1 class="view-row color-primary">Skapa ett konto!</h1>
+          <form action="/signup-tutor" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="token" name="bid-token" />
+            <input type="hidden" id="ssn" name="ssn" />
 
-                    <label class="form-label bolder">Förnamn</label>
-                    <input id="first-name" name="first-name" class="form-input" required disabled>
+            <label class="form-label bolder">Förnamn</label>
+            <input id="first-name" name="first-name" class="form-input" required disabled />
 
-                    <label class="form-label bolder">Efternamn</label>
-                    <input id="last-name" name="last-name" class="form-input" required disabled>
+            <label class="form-label bolder">Efternamn</label>
+            <input id="last-name" name="last-name" class="form-input" required disabled />
 
-                    <label class="form-label bolder">Mobilnummer</label>
-                    <input id="phone" name="phone" type="tel" class="form-input" required>
+            <label class="form-label bolder">Namn som visas i min profil</label>
+            <input id="alias" name="alias" class="form-input" required />
 
-                    <label class="form-label bolder">Email</label>
-                    <input id="email" name="email" type="email" class="form-input" required>
+            <label class="form-label bolder">Mobilnummer</label>
+            <input id="phone" name="phone" type="tel" class="form-input" required />
 
-                    <label class="form-label bolder">Bekräfta Email</label>
-                    <input id="confirm-email" name="confirm-email" type="email" class="form-input" required>
+            <label class="form-label bolder">Email</label>
+            <input id="email" name="email" type="email" class="form-input" required />
 
-                    <label class="form-label bolder">Var är du verksam?</label>
-                    <select multiple required name="locations" id="select-locations" class="form-select form-input "
-                        name="locations">
-                        {{ range .Data.Locations }}
-                        <option value="{{.ID}}">{{.Name}}</option>
-                        {{ end }}
-                        required
-                    </select>
+            <label class="form-label bolder">Bekräfta Email</label>
+            <input id="confirm-email" name="confirm-email" type="email" class="form-input" required />
 
+            <label class="form-label bolder">Var är du verksam?</label>
+            <select multiple required name="locations" id="select-locations" class="form-select form-input" name="locations">
+              {{ range .Data.Locations }}
+              <option value="{{.ID}}">{{.Name}}</option>
+              {{ end }} required
+            </select>
 
-                    <div class="view-row-alt form-label">
-                        <label class="flex flex-start center-items">
-                            <input name="online-lessons" type="checkbox" class="form-checkbox">
-                            Jag kan öven ge lektioner online
-                        </label>
-                    </div>
+            <div class="view-row-alt form-label">
+              <label class="flex flex-start center-items">
+                <input name="online-lessons" type="checkbox" class="form-checkbox" />
+                Jag kan öven ge lektioner online
+              </label>
+            </div>
 
-                    <div class="view-row-alt">
-                        <label class="view-row bolder">Ämnen jag ger lektioner i</label>
-                        <span id="subject-error" style="color: red; display: none; font-size: 14px;">Välj minst ett
-                            ämne</span>
+            <div class="view-row-alt">
+              <label class="view-row bolder">Ämnen jag ger lektioner i</label>
+              <span id="subject-error" style="color: red; display: none; font-size: 14px">Välj minst ett ämne</span>
 
-                        <div class="view-row flex-between flex-row">
-                            {{ range .Data.Subjects }}
-                            <div class="third">
-                                <input type="checkbox" id="subject-{{ .ID }}" name="subject" value="{{ .ID }}"
-                                    class="form-check-hidden subject-checkbox">
-                                <label class="form-check-hidden-label view-btn-full" for="subject-{{ .ID }}">{{
-                                    .Name}}</label>
-                            </div>
-                            {{ end }}
-                        </div>
-                    </div>
+              <div class="view-row flex-between flex-row">
+                {{ range .Data.Subjects }}
+                <div class="third">
+                  <input type="checkbox" id="subject-{{ .ID }}" name="subject" value="{{ .ID }}" class="form-check-hidden subject-checkbox" />
+                  <label class="form-check-hidden-label view-btn-full" for="subject-{{ .ID }}">{{ .Name}}</label>
+                </div>
+                {{ end }}
+              </div>
+            </div>
 
-                    <div class="view-row">
-                        <label class="bolder">Nivå / Nivåer lämplig för mina lektioner</label>
-                        <span id="level-error" style="color: red; display: none; font-size: 14px;">Välj minst en
-                            nivå</span>
-                        <div class="view-row flex-between flex-row">
-                            {{ range .Data.Levels }}
-                            <div class="half">
-                                <input type="checkbox" id="level-{{ .ID }}" name="level" value="{{ .ID }}"
-                                    class="form-check-hidden level-checkbox">
-                                <label class="form-check-hidden-label view-btn-full" for="level-{{ .ID }}">{{
-                                    .Name}}</label>
-                            </div>
-                            {{ end }}
-                        </div>
-                    </div>
+            <div class="view-row">
+              <label class="bolder">Nivå / Nivåer lämplig för mina lektioner</label>
+              <span id="level-error" style="color: red; display: none; font-size: 14px">Välj minst en nivå</span>
+              <div class="view-row flex-between flex-row">
+                {{ range .Data.Levels }}
+                <div class="half">
+                  <input type="checkbox" id="level-{{ .ID }}" name="level" value="{{ .ID }}" class="form-check-hidden level-checkbox" />
+                  <label class="form-check-hidden-label view-btn-full" for="level-{{ .ID }}">{{ .Name}}</label>
+                </div>
+                {{ end }}
+              </div>
+            </div>
 
-                    <div class="view-row">
-                        <label class="view-row bolder"> Beskriv dig själv</label>
-                        <textarea name="description" class="form-textarea view-row" style="height: 100px"
-                            type="text-area" placeholder="Tex ålder, var du bor, var du har gått i skolan och 
+            <div class="view-row">
+              <label class="view-row bolder"> Beskriv dig själv</label>
+              <textarea
+                name="description"
+                class="form-textarea view-row"
+                style="height: 100px"
+                type="text-area"
+                placeholder="Tex ålder, var du bor, var du har gått i skolan och 
 vilken utbildning du går eller har gått. Skriv gärna
 eventuella meriter i form av betyg eller tidigare 
-erfarenhet som studiecoach." required></textarea>
-                    </div>
-
-                    <div class="view-image-wrapper view-row">
-                        <img id="image-preview" class="view-image"
-                            src="{{.Props.Static}}/images/app/profile-placeholder.png" alt="din bild" />
-                        <label for="image" class="view-image-label">Ladda upp en bild</label>
-                        <input id="image" name="image" class="view-file" type="file"
-                            accept="image/png, image/jpeg, image/gif" required>
-                    </div>
-
-                    <div class="view-row-alt">
-                        <div class="view-row-alt form-label">
-                            <label class="flex flex-start center-items">
-                                <input name="sms-opt-in" type="checkbox" class="form-checkbox">
-                                Jag få information om bokningar via SMS
-                            </label>
-                        </div>
-
-                        <div class="view-row-alt form-label">
-                            <label class="flex flex-start center-items">
-                                <input name="terms" type="checkbox" class="form-checkbox" required>
-                                Godkänn allmänna villkor
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="flex">
-                        <button class="view-btn view-btn-alt view-btn-extra-wide view-row-alt" type="submit">
-                            Nästa
-                        </button>
-                    </div>
-
-
-                    <div class="view-row-alt"></div>
-                </form>
+erfarenhet som studiecoach."
+                required
+              ></textarea>
             </div>
+
+            <div class="view-image-wrapper view-row">
+              <img id="image-preview" class="view-image" src="{{.Props.Static}}/images/app/profile-placeholder.png" alt="din bild" />
+              <label for="image" class="view-image-label">Ladda upp en bild</label>
+              <input id="image" name="image" class="view-file" type="file" accept="image/png, image/jpeg, image/gif" required />
+            </div>
+
+            <div class="view-row-alt">
+              <div class="view-row-alt">
+                <div class="flex flex-start flex-nowrap">
+                  <input name="sms-opt-in" type="checkbox" class="form-checkbox" />
+                  <label class="text-light" style="width: 90%">Utöver att få information via email så vill jag också få information om bokningar via SMS</label>
+                </div>
+              </div>
+
+              <div class="view-row-alt">
+                <div class="flex flex-start center-items flex-nowrap">
+                  <input name="terms" type="checkbox" class="form-checkbox" required />
+                  <label class="text-light"> Godkänn <a href="/terms" class="text-underline"> allmänna villkor </a> </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex">
+              <button class="view-btn view-btn-alt view-btn-extra-wide view-row-alt" type="submit">Nästa</button>
+
+              <div class="text-light text-medium view-row view-center">
+                <p>Information om hur vi behandlar dina personuppgifter kan du läsa mer om här <a target="_blank" class="link text-underline" href="/policy">Integritetspolicy</a>.</p>
+              </div>
+
+              <div class="text-light text-medium view-row view-center">
+                <p>Har du frågor angående registreringen, kontakta oss.</p>
+                <a href="mailto:hej@upforschool.se?subject=Registrera%20studiecoach" class="view-btn view-btn-extra-wide view-row">Kontakta oss</a>
+              </div>
+            </div>
+
+            <div class="view-row-alt"></div>
+          </form>
         </div>
+      </div>
     </div>
 
-
     <script>
-        let locationsEL = document.getElementById("select-locations")
-        new Choices(locationsEL, {
-            removeItemButton: true,
-            noResultsText: 'Inga platser att välja',
-            noChoicesText: 'Det finns inga fler platser att välja',
-            itemSelectText: 'Tryck för val'
+      let locationsEL = document.getElementById("select-locations");
+      new Choices(locationsEL, {
+        removeItemButton: true,
+        noResultsText: "Inga platser att välja",
+        noChoicesText: "Det finns inga fler platser att välja",
+        itemSelectText: "Tryck för val",
+      });
+
+      let image = document.getElementById("image");
+      let imagePreview = document.getElementById("image-preview");
+
+      image.addEventListener(
+        "change",
+        function (event) {
+          var form = event.target;
+          if (!form.files || !form.files[0]) return;
+
+          var reader = new FileReader();
+          reader.onload = (e) => (imagePreview.src = e.target.result);
+          reader.readAsDataURL(form.files[0]);
+        },
+        false
+      );
+
+      // Form validation for subjects and levels
+      const signupForm = document.querySelector("form");
+      const subjectError = document.getElementById("subject-error");
+      const levelError = document.getElementById("level-error");
+
+      signupForm.addEventListener("submit", function (event) {
+        let isValid = true;
+
+        // Check if at least one subject is selected
+        const subjectCheckboxes = document.querySelectorAll(".subject-checkbox");
+        const subjectChecked = Array.from(subjectCheckboxes).some((cb) => cb.checked);
+
+        if (!subjectChecked) {
+          subjectError.style.display = "block";
+          isValid = false;
+        } else {
+          subjectError.style.display = "none";
+        }
+
+        // Check if at least one level is selected
+        const levelCheckboxes = document.querySelectorAll(".level-checkbox");
+        const levelChecked = Array.from(levelCheckboxes).some((cb) => cb.checked);
+
+        if (!levelChecked) {
+          levelError.style.display = "block";
+          isValid = false;
+        } else {
+          levelError.style.display = "none";
+        }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+          event.preventDefault();
+          // Scroll to first error
+          if (!subjectChecked) {
+            subjectError.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else if (!levelChecked) {
+            levelError.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }
+      });
+
+      // Hide error messages when user selects a checkbox
+      document.querySelectorAll(".subject-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          if (Array.from(document.querySelectorAll(".subject-checkbox")).some((cb) => cb.checked)) {
+            subjectError.style.display = "none";
+          }
         });
+      });
 
-        let image = document.getElementById("image");
-        let imagePreview = document.getElementById("image-preview");
-
-        image.addEventListener("change", function (event) {
-            var form = event.target;
-            if (!form.files || !form.files[0]) return
-
-            var reader = new FileReader();
-            reader.onload = (e) => imagePreview.src = e.target.result;
-            reader.readAsDataURL(form.files[0]);
-        }, false);
-
-        // Form validation for subjects and levels
-        const signupForm = document.querySelector('form');
-        const subjectError = document.getElementById('subject-error');
-        const levelError = document.getElementById('level-error');
-
-        signupForm.addEventListener('submit', function (event) {
-            let isValid = true;
-
-            // Check if at least one subject is selected
-            const subjectCheckboxes = document.querySelectorAll('.subject-checkbox');
-            const subjectChecked = Array.from(subjectCheckboxes).some(cb => cb.checked);
-
-            if (!subjectChecked) {
-                subjectError.style.display = 'block';
-                isValid = false;
-            } else {
-                subjectError.style.display = 'none';
-            }
-
-            // Check if at least one level is selected
-            const levelCheckboxes = document.querySelectorAll('.level-checkbox');
-            const levelChecked = Array.from(levelCheckboxes).some(cb => cb.checked);
-
-            if (!levelChecked) {
-                levelError.style.display = 'block';
-                isValid = false;
-            } else {
-                levelError.style.display = 'none';
-            }
-
-            // Prevent form submission if validation fails
-            if (!isValid) {
-                event.preventDefault();
-                // Scroll to first error
-                if (!subjectChecked) {
-                    subjectError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else if (!levelChecked) {
-                    levelError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
+      document.querySelectorAll(".level-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          if (Array.from(document.querySelectorAll(".level-checkbox")).some((cb) => cb.checked)) {
+            levelError.style.display = "none";
+          }
         });
-
-        // Hide error messages when user selects a checkbox
-        document.querySelectorAll('.subject-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                if (Array.from(document.querySelectorAll('.subject-checkbox')).some(cb => cb.checked)) {
-                    subjectError.style.display = 'none';
-                }
-            });
-        });
-
-        document.querySelectorAll('.level-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                if (Array.from(document.querySelectorAll('.level-checkbox')).some(cb => cb.checked)) {
-                    levelError.style.display = 'none';
-                }
-            });
-        });
-
+      });
     </script>
 
-    {{template "cookie-consent" .}}
-</body>
-
+    {{ template "footer" . }} {{template "cookie-consent" .}}
+  </body>
 </html>

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
+	"upforschool/internal/pkg/worldline"
 
 	"github.com/disintegration/imaging"
 	"github.com/gofrs/uuid"
@@ -14,12 +14,15 @@ import (
 type Core struct {
 	imagePath string
 	db        *sqlx.DB
+
+	worldline *worldline.Worldline
 }
 
-func NewCore(db *sqlx.DB) *Core {
+func NewCore(db *sqlx.DB, worldline *worldline.Worldline) *Core {
 	return &Core{
 		imagePath: "static/images/tutors/",
 		db:        db,
+		worldline: worldline,
 	}
 }
 
@@ -66,9 +69,9 @@ func (c *Core) AddTutor(tutor Tutor, locations []string, subjects []string, leve
 
 	id := uuid.Must(uuid.NewV4())
 	query := `
-	INSERT INTO tutors (id, user_id, online_lessons, description, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-	_, err = tx.Exec(query, id, tutor.UserID, tutor.OnlineLessons, tutor.Bio)
+	INSERT INTO tutors (id, user_id, alias, online_lessons, description, created_at, updated_at)
+		 VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+	_, err = tx.Exec(query, id, tutor.UserID, tutor.Alias, tutor.OnlineLessons, tutor.Bio)
 	if err != nil {
 		tx.Rollback()
 		return "", fmt.Errorf("failed to add tutor %w", err)
@@ -113,20 +116,17 @@ func (c *Core) AddTutor(tutor Tutor, locations []string, subjects []string, leve
 }
 
 type LessonRequest struct {
-	SubjectID   string    `json:"subject"`
-	LevelID     string    `json:"level"`
-	LocationID  string    `json:"location"`
-	IsOnline    bool      `json:"isOnline"`
-	Tutors      []string  `json:"tutors"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	StartAt     time.Time `json:"startAt"`
-	Duration    int       `json:"duration"` // minutes
+	SubjectID   string   `json:"subject"`
+	LevelID     string   `json:"level"`
+	LocationID  string   `json:"location"`
+	IsOnline    bool     `json:"isOnline"`
+	Tutors      []string `json:"tutors"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Duration    int      `json:"duration"` // minutes
 }
 
 func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
-
-	r.StartAt = time.Now()
 
 	if r.LocationID == "online" {
 		r.LocationID = "-1"
@@ -147,13 +147,12 @@ func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
 		subject_id,
 		level_id,
 		location_id,
-		online_lessson,
+		online_lesson,
 		title,
-		description,
-		start_at
+		description
 	)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-	_, err = tx.Exec(query, id, userID, r.SubjectID, r.LevelID, r.LocationID, r.IsOnline, r.Title, r.Description, r.StartAt)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err = tx.Exec(query, id, userID, r.SubjectID, r.LevelID, r.LocationID, r.IsOnline, r.Title, r.Description)
 	if err != nil {
 		tx.Rollback()
 		return "", fmt.Errorf("failed to add lesson %w", err)
@@ -176,6 +175,47 @@ func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
 	}
 
 	return id.String(), nil
+}
+
+func (c *Core) AcceptLesson(lessonID, tutorID string) (string, error) {
+
+	tx, err := c.db.Begin()
+	if err != nil {
+		return "", err
+	}
+
+	query := `
+	UPDATE lesson_requests
+	   SET status = 'ACCEPTED',
+	       updated_at = CURRENT_TIMESTAMP,
+		   accepted_at = CURRENT_TIMESTAMP
+	 WHERE lesson_id = $1 AND tutor_id = $2`
+	_, err = tx.Exec(query, lessonID, tutorID)
+	if err != nil {
+		tx.Rollback()
+		return "", fmt.Errorf("failed to accept lesson %w", err)
+	}
+
+	tx.Exec(`UPDATE lessons
+	   SET tutor_id = $1,
+	       updated_at = CURRENT_TIMESTAMP
+	 WHERE id = $2`, tutorID, lessonID)
+	if err != nil {
+		tx.Rollback()
+		return "", fmt.Errorf("failed to update lesson %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+
+	return lessonID, nil
+}
+
+func (c *Core) DeleteLesson(lessonID string) error {
+	_, err := c.db.Exec("UPDATE lessons set deleted_at = NOW() where id = $1", lessonID)
+	return err
 }
 
 // SwitchOrganization use cae.

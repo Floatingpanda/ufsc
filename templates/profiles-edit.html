@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{ template "head" . }}
+    <link rel="stylesheet" href="{{.Props.Static}}/vendor/choices/choices.min.css" />
+    <script src="{{.Props.Static}}/vendor/choices/choices.min.js"></script>
+  </head>
+
+  <body>
+    {{template "nav" .Name}}
+
+    <div class="group">
+      <div class="main split-page">
+        <div class="group-column">
+          <div class="view-container">
+            <h1>Ändra personliga uppgifter</h1>
+
+            <form method="post">
+              <input type="hidden" name="id" value="{{.Data.Profile.User.ID}}" />
+              <div class="group">
+                <div class="group-fifty">
+                  <label for="firstname" class="form-label">Förnamn</label>
+                  <input type="text" name="firstname" id="firstname" class="form-input" value="{{.Data.Profile.User.FirstName}}" required />
+                </div>
+                <div class="group-fifty">
+                  <label for="lastname" class="form-label">Efternamn</label>
+                  <input type="text" name="lastname" id="lastname" class="form-input" value="{{.Data.Profile.User.LastName}}" required />
+                </div>
+              </div>
+
+              <label for="phone" class="form-label">Mobilnummer</label>
+              <input type="text" name="phone" id="phone" class="form-input" value="{{.Data.Profile.User.Phone}}" required />
+              <p class="form-tip">Ändra telefonnummer</p>
+
+              <label for="locations" class="form-label">Dina platser</label>
+              <select multiple id="locations" name="locations">
+                {{range .Data.Locations}}
+                <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
+                {{end}}
+              </select>
+              <p class="form-tip">Lägg till eller ta bort platser</p>
+
+              <label for="subjects" class="form-label">Dina Ämnen</label>
+              <select multiple id="subjects" name="subjects">
+                {{range .Data.Subjects}}
+                <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
+                {{end}}
+              </select>
+              <p class="form-tip">Lägg till eller ta bort ämnen du lär ut</p>
+
+              <label for="levels" class="form-label">Dina nivåer</label>
+              <select multiple id="levels" name="levels">
+                {{range .Data.Levels}}
+                <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
+                {{end}}
+              </select>
+              <p class="form-tip">Lägg till eller ta bort nivåer du lär ut på</p>
+
+              {{if .Data.Profile.IsTutor }}
+              <label for="bio" class="form-label">Beskriv dig själv</label>
+              <textarea class="form-textarea" name="bio" id="bio" placeholder="Beskriv dig själv för andra användare" required>{{.Data.Tutor.Bio}}</textarea>
+              {{end}}
+
+              <div class="view-row">
+                <input class="form-checkbox" id="notify-sms" type="checkbox" name="notify_sms" {{if .Data.Profile.User.SMSOptIn}}checked{{end}} />
+                <label class="form-checkbox-label" for="notify-sms">Få notiser via sms</label>
+              </div>
+
+              <div class="view-row">
+                <div class="flex flex-row gap-32">
+                  <button style="width: 200px" class="view-btn view-btn-alt view-btn-full">Spara</button>
+                  <a style="width: 150px" href="/profiles" class="view-btn view-btn-full">Avbryt</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="group-column">
+          <div class="view-container">
+            <img class="view-image" src="{{.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}" />
+            <label class="view-image-label" for="image">Välj bild</label>
+          </div>
+          <div class="view-container view-image-form">
+            <form enctype="multipart/form-data" action="/profiles/image" method="post">
+              <input type="file" name="image" id="image" class="view-file" accept=".png,.jpg,.gif" required />
+              <input type="submit" class="view-btn" value="Ändra bild" style="display: none" />
+            </form>
+          </div>
+
+          <div class="view-container">
+            <form action="/profiles/password" method="post">
+              <label for="password" class="form-label">Lösenord</label>
+              <input type="password" name="password" id="password" class="form-input" min="8" placeholder="Ange nytt lösenod" required />
+
+              <p class="form-tip text-light text-small">Här kan du ändra ditt lösenord. Vänligen notera också att har du ett konto på Up For Match så kommer ditt lösenord att ändras även där.</p>
+
+              <div class="view-row">
+                <input type="submit" class="view-btn" value="Ändra lösenord" />
+              </div>
+            </form>
+
+            <form action="/profiles/email" method="post">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" name="email" id="email" class="form-input" placeholder="Ange ny email" required />
+
+              <label for="emailConfirm" class="form-label">Bekräfta email</label>
+              <input type="email" name="emailConfirm" id="emailConfirm" class="form-input" placeholder="Bekräfta ny email" required />
+
+              <p class="form-tip text-light text-small">Här kan du ändra din epostadress ({{.Data.Profile.User.Email}}) och då ändras den epostadress du loggar in med om du inte är studiecoach</p>
+              <div class="view-row">
+                <input type="submit" class="view-btn" value="Ändra email" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        let subjects = document.getElementById("subjects");
+        let locations = document.getElementById("locations");
+        let levels = document.getElementById("levels");
+
+        new Choices(subjects, {
+          removeItemButton: true,
+          noResultsText: "Inga ämnen att välja",
+          noChoicesText: "Det finns inga fler ämnen att välja",
+          itemSelectText: "Tryck för val",
+        });
+
+        new Choices(locations, {
+          removeItemButton: true,
+          noResultsText: "Inga platser att välja",
+          noChoicesText: "Det finns inga fler platser att välja",
+          itemSelectText: "Tryck för val",
+        });
+
+        new Choices(levels, {
+          removeItemButton: true,
+          noResultsText: "Inga nivåer att välja",
+          noChoicesText: "Det finns inga fler nivåer att välja",
+          itemSelectText: "Tryck för val",
+        });
+      })();
+    </script>
+
+    {{template "footer" .}}
+  </body>
+</html>

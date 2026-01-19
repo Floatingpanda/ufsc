@@ -1,0 +1,32 @@
+<head>
+  {{ template "head" . }}
+</head>
+<div class="overlay">
+  <div class="blue-section overlay-inner rounded-container" style="width: 90%; max-width: 600px; min-height: 200px; padding: 10px">
+    <div class="blue-section pattern-section flex flex-row">
+      <div class="text-box" style="flex: 3; width: 300px; background-color: white; color: black">
+        <h3 class="view-row color-primary">Om mig</h3>
+        <p>{{.Data.Tutor.Bio}}</p>
+
+        <h3 class="view-row color-primary">Jag kan hjälpa dig inom:</h3>
+
+        <h3 class="view-row color-primary">Betyg: -</h3>
+      </div>
+
+      <div class="view-container center color-white" style="flex: 2">
+        <img class="summary-image" src="{{$.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}" />
+        <p class="view-row text-medium text-strong"><strong>{{.Data.Tutor.Alias}}</strong></p>
+        <p class="text-medium">Betyg: -</p>
+        <p class="text-small">0 bokningar</p>
+
+        <button onclick="closeOverlay()" class="view-row view-btn view-btn-white-fill view-btn-wide">Tillbaka</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function closeOverlay() {
+      document.querySelector(".overlay").style.display = "none";
+    }
+  </script>
+</div>

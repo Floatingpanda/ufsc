@@ -14,6 +14,9 @@
 
   <body>
     {{template "nav" .Name}}
+
+    <div id="tutor-details"></div>
+
     <div class="full-page blue-section">
       <div class="view-container">
         <div id="step-container" class="step-right center container centered-page">
@@ -67,14 +70,52 @@
           <div id="step-4" class="view-row step">
             {{ template "tutor-request-header" "Välj Studiecoach" }}
 
-            <div id="tutors-container" hx-get="/list/tutors" hx-trigger="loadTutors" hx-target="this" hx-swap="innerHTML" class="step-content fade-container"></div>
+            <div id="tutors-container" hx-get="/tutors/list" hx-trigger="loadTutors" hx-target="this" hx-swap="innerHTML" class="step-content fade-container"></div>
           </div>
 
           <!-- step 5 -->
-          <div id="step-5" class="view-row step">{{ template "tutor-request-header" "Välj tid" }}</div>
+          <!-- <div id="step-5" class="view-row step">
+            {{ template "tutor-request-header" "Välj tid för lektionen" }}
+            <div class="step-content">
+              <style>
+                input[type="time"],
+                input[type="date"] {
+                  padding: 10px 12px;
+                  border: 1px solid #ccc;
+                  border-radius: 8px;
+                  font-size: 16px;
+                  transition: all 0.3s ease;
+                  width: 150px;
+                }
 
-          <!-- step 6 -->
-          <div id="step-6" class="view-row step">
+                input[type="time"]:focus,
+                input[type="date"]:focus {
+                  border-color: #4e9af1;
+                  box-shadow: 0 0 0 3px rgba(78, 154, 241, 0.2);
+                  outline: none;
+                }
+              </style>
+              <div class="center-container" style="width: 350px">
+                <div class="view-row flex-between">
+                  <h3 class="center" for="date-pick">Välj datum</h3>
+                  <input onchange="updateDateTime()" class="inline-block" id="date-pick" type="date" id="start" min="2025-01-01" max="2030-12-31" />
+                </div>
+
+                <div class="view-row flex-between">
+                  <h3 class="center" for="meeting-time">Välj en tid</h3>
+                  <input onchange="updateDateTime()" class="inline-block" type="time" id="meeting-time" name="meeting-time" />
+                </div>
+              </div>
+
+              <script>
+                const today = new Date().toISOString().split("T")[0]; // gets YYYY-MM-DD
+                document.getElementById("date-pick").value = today;
+              </script>
+            </div>
+          </div> -->
+
+          <!-- step 5 -->
+          <div id="step-5" class="view-row step">
             {{ template "tutor-request-header" "Information om lektionen" }}
 
             <div class="view-row-alt step-content">
@@ -96,8 +137,8 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
             </div>
           </div>
 
-          <!-- step 7 -->
-          <div id="step-7" class="view-row step">
+          <!-- step 6 -->
+          <div id="step-6" class="view-row step">
             {{ template "tutor-request-header" "Kontrollera information" }}
 
             <div class="step-content">
@@ -105,6 +146,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
                 <p class="text-medium">Hjälp med: <span id="preview-subject"></span></p>
                 <p class="text-medium">Nivå: <span id="preview-level"></span></p>
                 <p class="text-medium">Var: <span id="preview-location"></span></p>
+                <!-- <p class="text-medium">När: <span id="preview-start-at"></span></p> -->
                 <br />
                 <p class="text-medium" id="preview-title"></p>
                 <br />
@@ -113,8 +155,8 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
             </div>
           </div>
 
-          <!-- step 8  -->
-          <div id="step-8" class="view-row step">
+          <!-- step 7  -->
+          <div id="step-7" class="view-row step">
             <div class="step-content">
               <h1>Betal Steg</h1>
             </div>
@@ -137,7 +179,6 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
           <div class="step-arrow">5</div>
           <div class="step-arrow">6</div>
           <div class="step-arrow">7</div>
-          <div class="step-arrow">8</div>
         </div>
       </div>
     </div>
@@ -148,6 +189,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
     <script>
       let step = 1;
 
+      // data
       let tutorRequest = {
         subject: -1,
         level: -1,
@@ -156,14 +198,15 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
         tutors: [],
         title: "",
         description: "",
-        startAt: null,
-        duration: null,
+        startAt: "",
+        duration: 0, // in minutes
       };
 
       let preview = {
         subject: "",
         level: "",
         location: "",
+        // time: "",
       };
 
       let stepArrows = document.querySelectorAll(".step-arrow");
@@ -213,6 +256,15 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
         validateStep();
       }
 
+      //   function updateDateTime() {
+      //     let date = document.getElementById("date-pick").value;
+      //     let time = document.getElementById("meeting-time").value;
+      //     let dateTime = date + "T" + time + ":00";
+      //     preview.time = date + " " + time;
+      //     tutorRequest.startAt = date.length > 0 && time.length > 0 ? dateTime : "";
+      //     validateStep();
+      //   }
+
       nextButton.onclick = () => {
         stepper.style.viewTransitionName = "step-right";
         if (step === 3) fetchTutors();
@@ -246,6 +298,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
         document.getElementById("preview-location").innerText = locationName;
         document.getElementById("preview-title").innerText = tutorRequest.title;
         document.getElementById("preview-description").innerText = tutorRequest.description;
+        // document.getElementById("preview-start-at").innerText = preview.time;
       }
 
       function validateStep() {
@@ -254,6 +307,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
         if (step === 2) isValid = tutorRequest.level !== -1;
         if (step === 3) isValid = tutorRequest.location !== -1;
         if (step === 4) isValid = tutorRequest.tutors.length > 0;
+        // if (step === 5) isValid = tutorRequest.startAt.length > 0;
         if (step === 5) isValid = tutorRequest.title.length > 0 && tutorRequest.description.length > 0;
         if (step === 6) isValid = true;
 
@@ -283,7 +337,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
       }
 
       function createLessonRequest() {
-        fetch("/lessons/new", {
+        fetch("/lesson/new", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -292,9 +346,8 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
         })
           .then((response) => {
             if (response.ok) {
-              window.location.href = "/home"; // Redirect to home or another page
-
-              window.location.href = "/home&lesson=" + response.lessonID;
+              console.log("Lesson request created successfully", response.lessonID, response);
+              //   window.location.href = "/home&lesson=" + response.lessonID;
             } else {
               alert("Ett fel uppstod vid skickandet av förfrågan.");
             }
@@ -307,7 +360,7 @@ Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig 
 
       let tryViewTransition = (f) => (document.startViewTransition ? document.startViewTransition(f) : f());
 
-      updateStep(4);
+      //   updateStep(6);
     </script>
   </body>
 </html>

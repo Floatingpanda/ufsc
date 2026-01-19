@@ -1,0 +1,117 @@
+
+
+  <div class="overlay"  {{ if not (eq .ID $.Data.SelectedGame)}} style="display:none;" {{end}}>
+                        <div class="overlay-inner">
+                            <img class="overlay-image" src="{{$.Props.Static}}images/organizations/{{.OrganizationImage}}">
+                            <div class="overlay-closer">
+                                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="20" cy="20" r="20" fill="black" fill-opacity="0.9"/>
+                                    <path d="M24.1649 12.516C25.0021 11.6787 26.3596 11.6787 27.1968 12.516V12.516C28.0341 13.3532 28.0341 14.7107 27.1968 15.5479L15.5479 27.1968C14.7107 28.0341 13.3532 28.0341 12.516 27.1968V27.1968C11.6787 26.3596 11.6787 25.0021 12.516 24.1649L24.1649 12.516Z" fill="white"/>
+                                    <rect width="4.2878" height="20.7619" rx="2.1439" transform="matrix(-0.707107 0.707107 0.707107 0.707107 14.032 11)" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="view-container margin-left margin-right">
+                                <div class="margin-left margin-right">
+                                    {{if $status.Accepted}}
+                                    <div class="overlay-status group list-status-green">
+                                        <div class="overlay-status-icon">
+                                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="15" cy="15" r="15" fill="#40DB88"/>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M23.5287 8.75127C22.7729 8.11703 21.646 8.21562 21.0117 8.97148L13.5448 17.8702L8.98853 12.4402C8.3543 11.6843 7.2274 11.5857 6.47154 12.22C5.71569 12.8542 5.6171 13.9811 6.25133 14.737L12.108 21.7167C12.1842 21.8075 12.2675 21.8889 12.3565 21.9606C12.3731 21.9757 12.3902 21.9905 12.4075 22.005C13.1634 22.6393 14.2903 22.5407 14.9245 21.7848L23.7489 11.2683C24.3832 10.5124 24.2846 9.38551 23.5287 8.75127Z" fill="white"/>
+                                            </svg>
+                                        </div>
+                                        <div class="overlay-status-text">{{$.Data.Translation.TeamCupsBooked}}</div>
+                                    </div>
+                                    {{else if $status.Rejected}}
+                                        <div class="overlay-status group list-status-red">
+                                            <div class="overlay-status-icon">
+                                                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <circle cx="15" cy="15" r="15" fill="#FF4A4A"/>
+                                                    <rect width="3.69935" height="17.5591" rx="1.84968" transform="matrix(0.80086 0.598852 -0.685526 0.728048 19.5374 7.5)" fill="white"/>
+                                                    <rect width="3.69935" height="17.5591" rx="1.84968" transform="matrix(0.80086 -0.598852 0.685526 0.728048 7.5 9.71631)" fill="white"/>
+                                                </svg>
+                                            </div>
+                                            <div class="overlay-status-text">{{$.Data.Translation.TeamCupsRejected}}</div>
+                                        </div>
+                                    {{else if $status.Invited}}
+                                        <div class="overlay-status group list-status-gray">
+                                            <div class="overlay-status-icon">
+                                                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12.6953 2.76582C13.8947 1.32647 16.1053 1.32647 17.3047 2.76582L18.1421 3.77073C18.7733 4.52825 19.7365 4.92721 20.7185 4.83791L22.0212 4.71945C23.8871 4.54977 25.4502 6.11294 25.2806 7.97881L25.1621 9.2815C25.0728 10.2635 25.4718 11.2267 26.2293 11.8579L27.2342 12.6953C28.6735 13.8947 28.6735 16.1053 27.2342 17.3047L26.2293 18.1421C25.4718 18.7733 25.0728 19.7365 25.1621 20.7185L25.2806 22.0212C25.4502 23.8871 23.8871 25.4502 22.0212 25.2806L20.7185 25.1621C19.7365 25.0728 18.7733 25.4718 18.1421 26.2293L17.3047 27.2342C16.1053 28.6735 13.8947 28.6735 12.6953 27.2342L11.8579 26.2293C11.2267 25.4718 10.2635 25.0728 9.2815 25.1621L7.97881 25.2806C6.11294 25.4502 4.54977 23.8871 4.71945 22.0212L4.83791 20.7185C4.92721 19.7365 4.52825 18.7733 3.77073 18.1421L2.76582 17.3047C1.32647 16.1053 1.32647 13.8947 2.76582 12.6953L3.77073 11.8579C4.52825 11.2267 4.92721 10.2635 4.83791 9.2815L4.71945 7.97881C4.54977 6.11294 6.11294 4.54977 7.97881 4.71945L9.2815 4.83791C10.2635 4.92721 11.2267 4.52825 11.8579 3.77073L12.6953 2.76582Z" fill="#6C6C6C"/>
+                                                    <path d="M13.3633 9.70122C13.2942 8.75054 14.0468 7.94116 15 7.94116V7.94116C15.9532 7.94116 16.7058 8.75053 16.6367 9.70122L16.1356 16.591C16.0923 17.1862 15.5968 17.647 15 17.647V17.647C14.4032 17.647 13.9077 17.1862 13.8644 16.591L13.3633 9.70122Z" fill="white"/>
+                                                    <circle cx="15" cy="21.1766" r="1.76471" fill="white"/>
+                                                </svg>
+                                            </div>
+                                            <div class="overlay-status-text">{{$.Data.Translation.TeamCupsNewInvite}}</div>
+                                        </div>
+                                    {{end}}
+
+                                    <h3 class="margin-0">{{.Title}}</h3>
+                                    <p class="text-wrap">{{.Description}}</p>
+
+                                    {{if .ThirdParty}}
+                                        <p class="text-strong view-row">{{$.Data.Translation.TeamCupsThirdParty}}</p>
+                                    {{end}}
+
+                                    <div class="view-row">
+                                        <p>Cup: <span class="text-strong">{{.Title}}</span></p>
+                                        {{if eq .Date .DateEnd}}
+                                            <p>{{$.Data.Translation.TeamCupsDateTime}}: <span class="text-strong">{{.Date}} {{.Begin}} - {{.End}}</span></td>
+                                        {{else}}
+                                            <p>{{$.Data.Translation.TeamCupsDate}}: <span class="text-strong">{{.Date}} {{.Begin}} - {{.DateEnd}} {{.End}}</span></td>
+                                        {{end}}
+                                        <p>{{$.Data.Translation.TeamCupsLocation}}: <span class="text-strong">{{.GeoName}}, {{.GeoAddress}}</span></p>
+                                        <p>
+                                            <span>{{$.Data.Translation.TeamCupsLastDate}}: </span>
+                                            <span class="text-strong {{if not .IsValid}}text-red{{end}}">
+                                                {{.ValidTo}}
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span>{{$.Data.Translation.TeamCupsCupIs}}:</span>
+                                            {{if .Sanctioned}}
+                                                <span class="text-strong">{{$.Data.Translation.TeamCupsSanctioned}}</span>
+                                            {{else}}
+                                                <span class="text-strong">{{$.Data.Translation.TeamCupsUnsanctioned}}</span>
+                                            {{end}}
+                                        </p>
+                                    </div>
+
+                                    <p class="view-row text-strong">{{$.Data.Translation.TeamCupsBookedTeams}}:</p>
+                                
+                                    <div class="group view-row">
+                                    {{range .Items}}
+                                        {{if eq .Role "TEAM"}}
+                                            {{if eq .Status "ACCEPTED"}}
+                                                <p class="invite-status text-dots" style="background-image:url({{$.Props.Static}}images/app/match-status-accepted.png)">{{.Organization}}</p>
+                                            {{end}}
+                                        {{end}}
+                                    {{end}}
+                                    </div>
+
+                                    <div class="group view-row">
+                                        {{if $status.Invited}}
+                                            <div class="flex-container">
+                                                {{if .IsValid}}
+                                                    <form action="/cups/accept/{{.ID}}" method="POST">
+                                                        <button class="view-btn view-btn-green">{{$.Data.Translation.TeamCupsAccept}}</button>
+                                                    </form>
+
+                                                    <form action="/cups/reject/{{.ID}}" method="POST">
+                                                        <div class="margin-left">
+                                                            <button class="view-btn view-btn-red margin-left">{{$.Data.Translation.TeamCupsReject}}</button>
+                                                        </div>
+                                                    </form>
+                                                {{else}}
+                                                    <button class="view-btn view-btn-green" disabled>{{$.Data.Translation.TeamCupsAccept}}</button>
+                                                    <button class="view-btn view-btn-red margin-left" disabled>{{$.Data.Translation.TeamCupsReject}}</button>
+                                                {{end}}
+                                            </div>
+                                        {{end}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    

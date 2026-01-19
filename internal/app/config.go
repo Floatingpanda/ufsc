@@ -41,6 +41,8 @@ type Config struct {
 		MD5key   string
 	} `json:"worldline"`
 	DB *database.Config `json:"db"`
+
+	PostmarkToken string `json:"postmarkToken"`
 }
 
 // ReadConfig from file name.

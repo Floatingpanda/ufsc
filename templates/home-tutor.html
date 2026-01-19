@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{ template "head" . }}
+    <script defer src="/static/vendor/alpinejs/3.10.3/alpine.min.js"></script>
+  </head>
+
+  <body>
+    {{template "nav" .Name}}
+
+    <main>
+      <div class="container">
+        <div class="ads-container center" style="height: 300px">
+          <h3>Annonsering</h3>
+        </div>
+      </div>
+
+      <!-- <div class="blue-section center" style="padding: 30px 20px">
+        <div class="section-content">
+          <h1>Hitta studiecoach</h1>
+          <h3 class="view-row">Det är superenkelt och tar bara några minuter!</h3>
+        </div>
+        <img src="/static/images/app/squiggle-arrow.png" style="left: -200px; margin-right: 400px" />
+
+        <a href="/lesson/new" style="margin-top: 20px">
+          <p class="header-squiggle2">Klicka här för att sätta igång!</p>
+        </a>
+      </div> -->
+
+      <div class="container">
+        <div class="center" style="padding: 40px 0px">
+          <h1 class="color-primary">Mina mottagna förfrågningar</h1>
+
+          <div class="view-row-alt">
+            <div class="group switch" id="lessons-switch">
+              <a href="#" data-status="active" class="switch-button lesson-switch {{if not .Data.ShowAllLessons}}switch-active{{end}}">Aktiva</a>
+              <a href="#" data-status="all" class="switch-button lesson-switch {{if .Data.ShowAllLessons}}switch-active{{end}}">Alla</a>
+            </div>
+
+            <!-- Lessons container loaded via HTMX -->
+            <div id="lessons-container" hx-get="/lessons?status={{if .Data.ShowAllLessons}}all{{else}}active{{end}}" hx-trigger="load" hx-swap="innerHTML">
+              <!-- Initial lessons loaded on page load -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const lessonsContainer = document.getElementById("lessons-container");
+      const lessonSwitches = document.querySelectorAll(".lesson-switch");
+
+      lessonSwitches.forEach((switchBtn) => {
+        switchBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const status = this.getAttribute("data-status");
+          lessonSwitches.forEach((btn) => btn.classList.remove("switch-active"));
+          this.classList.add("switch-active");
+          fetchLessons(status);
+        });
+      });
+
+      async function fetchLessons(status) {
+        try {
+          const response = await fetch(`/lessons/list?lessons=${status}`);
+          const html = await response.text();
+          lessonsContainer.innerHTML = html;
+        } catch (error) {
+          console.error("Error fetching lessons:", error);
+        }
+      }
+
+      fetchLessons("active");
+    </script>
+
+    {{ template "footer" . }}
+  </body>
+</html>

@@ -30,6 +30,7 @@
         <div class="split-page">
 
             <div>
+                {{if eq .Data.ActiveRole "TUTOR"}}
                 <div class="view-container">
 
                     <h1>Om mig</h1>
@@ -38,7 +39,7 @@
                         {{.Data.Tutor.Bio}}
                     </p>
                 </div>
-
+                {{end}}
 
                 {{if eq .Data.ActiveRole "TUTOR"}}
                 <div class="light-section " style="padding: 30px 20px">
@@ -48,9 +49,8 @@
 
 
                 <div class="view-container center">
-
                     <div class="view-row flex-columns flex gap-8">
-                        <a style="width: 180px;" class="view-btn">Personliga uppgifter</a>
+                        <a style="width: 180px;" href="/profile/edit" class="view-btn">Personliga uppgifter</a>
                         <a style="width: 180px;" href="/faq" class="view-btn">FAQ</a>
                         <a style="width: 180px;" href="/terms" class="view-btn">Allmänna villkor</a>
                         <a style="width: 180px;" href="/policy" class="view-btn">Integritetspolicy</a>
@@ -68,15 +68,28 @@
             </div>
 
             <div class="blue-section pattern-section center-align show-on-large">
+                
+                {{if eq .Data.ActiveRole "TUTOR"}}
                 <div class="view-image-wrapper view-row center-container">
                     <img class="view-image profile-picture" src="{{.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}"
-                        alt="din bild" />
-                </div>
+                        alt="profil bild" />
+                    </div>
+                {{else}}
+                    <div class="view-row center-container">
+                        <img src="{{.Props.Static}}/images/app/student-icon.png"
+                            alt="profil bild" />
+                    </div>
+                {{end}}
 
                 <div class="view-row">
                     <div class="center-container ">
-                        <h1>{{.Data.Profile.User.FirstName }} {{.Data.Profile.User.LastName}}</h1>
-                        <p class="text-medium m-8">{{if eq .Data.ActiveRole "TUTOR"}}Studiecoach{{else}}Elev{{end}}</p>
+
+                        {{if eq .Data.ActiveRole "TUTOR"}}
+                            <h1>{{.Data.Profile.User.FirstName }} {{.Data.Profile.User.LastName}}</h1>
+                        {{else}}
+                            <h3>{{.Data.Profile.User.Email }}</h3>
+                        {{end}}
+                        <p class="view-row text-medium">{{if eq .Data.ActiveRole "TUTOR"}}Studiecoach{{else}}Elev{{end}}</p>
                     </div>
                 </div>
             </div>

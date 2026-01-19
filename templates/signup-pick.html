@@ -1,39 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     {{ template "head" . }}
-</head>
+  </head>
 
-<body>
+  <body>
     {{template "nav-public" .}}
 
+    <div class="light-section" style="height: calc(100vh - 100px)">
+      <div class="flex-rows flex gap-32 color-primary view-center" style="padding: 100px 0px">
+        <a href="/signup-student">
+          <div class="container blue-section pattern-section view-btn" style="width: 400px; height: 400px; border-radius: 10px">
+            <h1 class="view-center" style="padding: 60px">Elev</h1>
+            <img src="{{.Props.Static}}/images/app/student-icon.png" alt="Elev" />
+          </div>
+        </a>
 
-    <div class="light-section" style="height: calc(100vh - 100px);">
-        <div class="flex-rows flex gap-32 color-primary view-center" style="padding: 100px 0px;">
-
-            <a href="/signup-student">
-                <div class="container blue-section pattern-section view-btn"
-                    style="width: 400px; height: 400px; border-radius: 10px;">
-                    <h1 class="view-center" style="padding: 60px">
-                        Elev
-                    </h1>
-                    <img src="{{.Props.Static}}/images/app/student-icon.png" alt="Elev" />
-                </div>
-            </a>
-
-            <a href="/signup-tutor">
-                <div class="container blue-section pattern-section view-btn"
-                    style="width: 400px; height: 400px; border-radius: 10px;">
-                    <h1 class="view-center" style="padding: 60px">
-                        Studiecoach
-                    </h1>
-                </div>
-            </a>
-
-        </div>
+        <a href="/signup-tutor">
+          <div class="container blue-section pattern-section view-btn" style="width: 400px; height: 400px; border-radius: 10px">
+            <h1 class="view-center" style="padding: 60px">Studiecoach</h1>
+          </div>
+        </a>
+      </div>
     </div>
 
-</body>
-
+    {{ template "footer" . }}
+  </body>
 </html>
