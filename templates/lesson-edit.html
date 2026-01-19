@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{ template "head" . }}
+  </head>
+
+  <body>
+    {{template "nav" .Name}}
+
+    <div class="blue-section">
+      <div class="center container centered-page" style="max-width: 800px; padding: 40px 20px">
+        <h2 class="color-white" style="margin-bottom: 40px">Redigera lektion</h2>
+
+        <!-- Lesson Info -->
+        <div class="view-row" style="margin-bottom: 30px">
+          <h3 style="margin-bottom: 16px">Information om lektionen</h3>
+          <input style="width: 100%; margin-bottom: 16px" class="view-text-input text-box" onkeyup="tutorRequest.title=this.value" onchange="tutorRequest.title=this.value" id="title" type="text" placeholder="Rubrik" value="{{.Data.Lesson.Title}}" />
+          <textarea
+            style="width: 100%; height: 200px"
+            onkeyup="tutorRequest.description = this.value"
+            onchange="tutorRequest.description = this.value"
+            id="description"
+            class="view-text-input text-box"
+            placeholder="Här skriver du all information som studiecoachen behöver veta om lektionen. 
+
+                Exempelvis: Beskrivning av elevens ålder, årskurs, etc
+                Fokusområden för lektionen, behovsbeskrivning, pris för lektionen och övrig information."
+          >
+{{.Data.Lesson.Description}}</textarea
+          >
+        </div>
+
+        <!-- Subject -->
+
+        <div class="flex flex-row gap-32">
+          <div class="">
+            <h3 style="margin-bottom: 16px">Ämne</h3>
+            <button class="view-btn view-btn-white view-btn-green-alt view-btn-extra-wide">{{ .Data.Lesson.SubjectName}}</button>
+          </div>
+          <!-- Level -->
+          <div class="">
+            <h3 style="margin-bottom: 16px">Nivå</h3>
+            <button class="view-btn view-btn-white view-btn-green-alt view-btn-extra-wide">{{ .Data.Lesson.LevelName}}</button>
+          </div>
+
+          <!-- Level -->
+          <div class="">
+            <h3 style="margin-bottom: 16px">Plats</h3>
+            <button class="view-btn view-btn-white view-btn-green-alt view-btn-extra-wide">{{ .Data.Lesson.LocationName}}</button>
+          </div>
+        </div>
+
+        <!-- Tutors -->
+        <div class="" style="margin-bottom: 30px">
+          <h3 class="color-primary" style="margin-bottom: 16px">Välj Studiecoach</h3>
+          <div id="tutors-container" hx-get="/tutors/list" hx-trigger="load" hx-target="this" hx-swap="innerHTML" hx-vals='{"subject": "{{.Data.Lesson.SubjectID}}", "level": "{{.Data.Lesson.LevelID}}", "location": "{{if .Data.Lesson.OnlineLesson}}online{{else}}{{.Data.Lesson.LocationID}}{{end}}", "lesson_id": "{{.Data.Lesson.ID}}"}'>
+            <p class="text-medium opacity-70">Laddar studiecoacher...</p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-row gap-16" style="margin-top: 40px">
+          <button id="update-button" onclick="updateLessonRequest(event)" class="fill-on-small view-btn view-btn-white-fill view-btn-wide">Uppdatera</button>
+          <a href="/home" class="fill-on-small view-btn view-btn-white view-btn-wide">Avbryt</a>
+          <button id="delete-button" onclick="deleteLessonRequest(event)" class="delete-btn fill-on-small view-btn view-btn-red view-btn-wide">Ta bort</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script>
+      // Initialize with existing lesson data
+      let tutorRequest = {
+        tutors: [],
+        title: "{{.Data.Lesson.Title}}",
+        description: `{{.Data.Lesson.Description}}`,
+        duration: 0,
+      };
+
+      const lessonID = "{{.Data.Lesson.ID}}";
+
+      function toggleTutor(e, tutorID) {
+        let select = tutorRequest.tutors.includes(tutorID);
+        let t = tutorRequest.tutors;
+        t.includes(tutorID) ? (tutorRequest.tutors = t.filter((id) => id !== tutorID)) : t.push(tutorID);
+        e.target.classList.toggle("view-btn-green-sel");
+        select ? (e.target.innerText = "Välj") : (e.target.innerText = "Vald");
+      }
+
+      function fetchTutors() {
+        let el = document.getElementById("tutors-container");
+        el.setAttribute(
+          "hx-vals",
+          JSON.stringify({
+            subject: tutorRequest.subject,
+            level: tutorRequest.level,
+            location: tutorRequest.location,
+          })
+        );
+        htmx.trigger("#tutors-container", "loadTutors");
+      }
+
+      function updateLessonRequest() {
+        fetch("/lesson/edit?lesson_id=" + lessonID, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(tutorRequest),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Lesson updated successfully");
+              window.location.href = "/home";
+            } else if (response.status === 403) {
+              alert("Du har inte behörighet att redigera denna lektion.");
+            } else {
+              alert("Ett fel uppstod vid uppdateringen av lektionen.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Ett fel uppstod vid uppdateringen av lektionen.");
+          });
+      }
+    </script>
+    {{ template "footer" . }}
+  </body>
+</html>

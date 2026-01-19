@@ -177,6 +177,59 @@ func (c *Core) AddLesson(userID string, r LessonRequest) (string, error) {
 	return id.String(), nil
 }
 
+func (c *Core) UpdateLesson(lessonID string, r LessonRequest) error {
+
+	if r.LocationID == "online" {
+		r.LocationID = "-1"
+	}
+
+	tx, err := c.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	query := `
+	UPDATE lessons
+	SET 
+	    title = $2,
+	    description = $3,
+	    updated_at = CURRENT_TIMESTAMP
+	WHERE id = $1`
+
+	_, err = tx.Exec(query, lessonID, r.Title, r.Description)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to update lesson %w", err)
+	}
+
+	// Delete existing lesson requests
+	// _, err = tx.Exec("DELETE FROM lesson_requests WHERE lesson_id = $1", lessonID)
+	// if err != nil {
+	// 	tx.Rollback()
+	// 	return fmt.Errorf("failed to delete old lesson requests %w", err)
+	// }
+
+	// Add new lesson requests
+	for _, tutorID := range r.Tutors {
+		log.Println("adding lesson request for tutor:", lessonID, tutorID)
+		query := `
+		INSERT INTO lesson_requests (lesson_id, tutor_id, status, created_at, updated_at)
+			 VALUES ($1, $2, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+		_, err = tx.Exec(query, lessonID, tutorID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to add lesson request %w", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Core) AcceptLesson(lessonID, tutorID string) (string, error) {
 
 	tx, err := c.db.Begin()
@@ -196,7 +249,7 @@ func (c *Core) AcceptLesson(lessonID, tutorID string) (string, error) {
 		return "", fmt.Errorf("failed to accept lesson %w", err)
 	}
 
-	tx.Exec(`UPDATE lessons
+	_, err = tx.Exec(`UPDATE lessons
 	   SET tutor_id = $1,
 	       updated_at = CURRENT_TIMESTAMP
 	 WHERE id = $2`, tutorID, lessonID)

@@ -721,17 +721,92 @@ func (a *App) handleNewLesson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (a *App) handleLessonEdit(w http.ResponseWriter, r *http.Request) {
+	user := a.profile(r)
+	lessonID := r.URL.Query().Get("lesson_id")
+
+	// Fetch the lesson
+	lesson, err := a.repo.GetLesson(lessonID)
+	if err != nil {
+		log.Println("handleLessonEdit: unable to fetch lesson:", err)
+		http.Error(w, "unable to fetch lesson", http.StatusInternalServerError)
+		return
+	}
+
+	// Verify ownership - only the student who created the lesson can edit it
+	if lesson.StudentID != user.User.ID {
+		http.Error(w, "only the student who created the lesson can edit it", http.StatusForbidden)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		// Fetch subjects, levels, and locations for the form
+		subjects, err := a.repo.Subjects()
+		if err != nil {
+			http.Error(w, "Unable to fetch subjects", http.StatusInternalServerError)
+			return
+		}
+
+		levels, err := a.repo.Levels()
+		if err != nil {
+			http.Error(w, "Unable to fetch levels", http.StatusInternalServerError)
+			return
+		}
+
+		locations, err := a.repo.Locations()
+		if err != nil {
+			http.Error(w, "Unable to fetch locations", http.StatusInternalServerError)
+			return
+		}
+
+		page := a.view.
+			Page("lesson-edit.html").
+			Add("Lesson", lesson).
+			Add("Subjects", subjects).
+			Add("Levels", levels).
+			Add("Locations", locations)
+
+		if err := a.view.Execute(w, page); err != nil {
+			log.Printf("handleLessonEdit: %v", err)
+		}
+
+	case http.MethodPost:
+		var req model.LessonRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid json", http.StatusBadRequest)
+			return
+		}
+
+		log.Println("tutors", req.Tutors)
+		err := a.core.UpdateLesson(lessonID, req)
+		if err != nil {
+			log.Println("handleLessonEdit: unable to update lesson:", err)
+			http.Error(w, "unable to update lesson", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"lessonID": lessonID,
+			"status":   "updated",
+		})
+
+	default:
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
 func (a *App) handleGetTutors(w http.ResponseWriter, r *http.Request) {
 	subjectID := r.URL.Query().Get("subject")
 	levelID := r.URL.Query().Get("level")
 	locationID := r.URL.Query().Get("location")
+	lessonID := r.URL.Query().Get("lesson_id")
 
 	onlineLessonsBool := locationID == "online"
 	subjectIDInt, _ := strconv.Atoi(subjectID)
 	levelIDInt, _ := strconv.Atoi(levelID)
 	locationIDInt, _ := strconv.Atoi(locationID)
-
-	log.Println("Getting tutors")
 
 	tutors, err := a.repo.Tutors(onlineLessonsBool, int(locationIDInt), int(subjectIDInt), int(levelIDInt))
 	if err != nil {
@@ -740,10 +815,28 @@ func (a *App) handleGetTutors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("tutors found:", len(tutors))
+	if lessonID != "" {
+		// Filter tutors who have already accepted the lesson
+		lessonTutors, err := a.repo.LessonTutors(lessonID)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Unable to fetch lesson tutors", http.StatusInternalServerError)
+			return
+		}
+
+		for _, lt := range lessonTutors {
+			for i, t := range tutors {
+				log.Println(lt.ID, t.ID)
+				if t.ID == lt.ID {
+					tutors[i].Selected = true
+					break
+				}
+			}
+		}
+	}
 
 	page := a.view.
-		Page("tutors-partial.html").
+		Page("tutor-selector.html").
 		Add("Tutors", tutors)
 
 	if err := a.view.Execute(w, page); err != nil {

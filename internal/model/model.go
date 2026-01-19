@@ -128,6 +128,9 @@ type TutorView struct {
 	SMSOptIn      bool      `db:"sms_opt_in" json:"sms_opt_in"`
 	Status        string    `db:"status" json:"status"`
 
+	BookedStatus string `db:"booked_status"`
+	Selected     bool   // utility field for selection in UI
+
 	Subjects []Subject
 	Levels   []Level
 }

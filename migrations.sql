@@ -129,6 +129,8 @@ CREATE TABLE lesson_requests (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_lesson_requests_lesson_tutor ON lesson_requests(lesson_id, tutor_id);
+
 CREATE TABLE ratings (
     id SERIAL PRIMARY KEY,
     lesson_id UUID REFERENCES lessons(id),

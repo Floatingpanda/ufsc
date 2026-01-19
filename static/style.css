@@ -51,6 +51,7 @@ body {
 
 .text-underline {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .color-grey {
@@ -188,11 +189,11 @@ body {
     font-family: inherit;
     border-radius: 20px;
     background: transparent;
-    /* border: 2px solid white; */
+    border: 2px solid white;
     padding: 16px 20px;
     text-align: left;
     color: white;
-
+    box-sizing: border-box;
 }
 
 .info-box {
@@ -1446,6 +1447,23 @@ a.view-btn {
     width: 50px;
 
 }
+
+.delete-btn{
+    margin-left: 40px;
+}
+
+@media (max-width: 640px) {
+  .fill-on-small {
+    width: 100%;
+  }
+
+  .delete-btn{
+    margin-left: 0px;
+    margin-top: 40px;
+  }
+}
+
+
 
 
 [x-cloak] { display: none !important; }

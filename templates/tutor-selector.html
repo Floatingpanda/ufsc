@@ -2,6 +2,8 @@
 <p>Inga studiecoacher för dina val hittades</p>
 {{ end }}
 
+<div id="tutor-details"></div>
+
 <div class="view-container flex step-content fade-container">
   {{ range .Data.Tutors }}
   <div class="m-8">
@@ -12,7 +14,7 @@
         <p class="text-medium color-black text-strong"><strong>{{.Alias}}</strong></p>
         <p class="text-light text-small">0 bokade pass</p>
       </div>
-      <button onclick="toggleTutor(event, {{.ID}})" style="color: grey; border-color: grey" class="m-4 text-light view-btn view-btn-small">Välj</button>
+      <button onclick="toggleTutor(event, {{.ID}})" style="color: grey; border-color: grey" class="m-4 text-light view-btn view-btn-small {{if .Selected}}view-btn-green-sel{{end}}" {{if .Selected}}disabled{{end}}>{{if .Selected}}Vald{{else}}Välj{{end}}</button>
       <p class="m-4 text-light text-medium text-underline" hx-get="/tutor/summary?tutor_id={{.ID}}" hx-target="#tutor-details" hx-swap="innerHTML" hx-trigger="click">läs mer</p>
     </div>
   </div>

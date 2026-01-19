@@ -42,7 +42,7 @@
               {{if not .DeletedAt.Valid}} {{if not .AcceptedAt.Valid}} {{ if $.Data.IsTutor }}
               <div class="view-row-alt"><a href="/lesson/accept?lesson_id={{ .ID }}" class="view-btn view-btn-green view-btn-wide"> Acceptera </a></div>
               {{else}}
-              <div class="view-row-alt"><a href="/lessons/edit?lesson_id={{ .ID }}" class="view-btn view-btn-red view-btn-wide"> Ändra </a></div>
+              <div class="view-row-alt"><a href="/lesson/edit?lesson_id={{ .ID }}" class="view-btn view-btn-red view-btn-wide"> Ändra </a></div>
               {{ end }} {{ end }} {{ end }}
             </div>
           </div>

@@ -83,6 +83,7 @@ func (a *App) routes() {
 	a.router.HandleFunc("/profile/edit", a.handleAuth(a.handleProfilesEdit()))
 
 	r.HandleFunc("/lesson/new", a.handleAuth(a.handleNewLesson))
+	r.HandleFunc("/lesson/edit", a.handleAuth(a.handleLessonEdit))
 
 	r.HandleFunc("GET /tutors/list", a.handleAuth(a.handleGetTutors))
 	r.HandleFunc("GET /lessons/list", a.handleAuth(a.handleListLessons))

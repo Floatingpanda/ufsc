@@ -203,6 +203,7 @@ func (r *Repository) SentLessonRequests(userID string) ([]LessonView, error) {
 		JOIN locations as loc on l.location_id = loc.id 
 		LEFT JOIN lesson_requests as req on l.id = req.lesson_id AND req.status = 'ACCEPTED'
 	WHERE l.student_id = $1 
+	ORDER BY l.created_at DESC
 	`
 
 	if err := r.db.Select(&result, query, userID); err != nil {
@@ -241,6 +242,7 @@ func (r *Repository) ReceivedLessonRequests(tutorID string) ([]LessonView, error
 	WHERE req.tutor_id = $1
 	AND (req.status = 'PENDING' OR l.tutor_id = $1)
 	AND l.deleted_at IS NULL
+	ORDER BY l.created_at DESC
 	`
 
 	if err := r.db.Select(&result, query, tutorID); err != nil {
@@ -285,6 +287,36 @@ func (r *Repository) GetLesson(lessonID string) (*LessonView, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (r *Repository) LessonTutors(lessonID string) ([]TutorView, error) {
+	query := `
+		SELECT DISTINCT
+			t.id,
+			t.user_id,
+			t.alias,
+			t.image,
+			t.online_lessons,
+			t.description,
+			first_name,
+			u.last_name,
+			u.email,
+			u.phone,
+			u.sms_opt_in,
+			u.status,
+			COALESCE(lr.status, 'PENDING') as booked_status
+		FROM users AS u
+		JOIN tutors AS t ON t.user_id = u.id
+		JOIN lesson_requests lr ON lr.tutor_id = t.id
+		WHERE lr.lesson_id = $1
+		
+	`
+	var result []TutorView
+	if err := r.db.Select(&result, query, lessonID); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // func (c *Core) ReceivedLessonRequests(userID string) (string, error) {
