@@ -81,6 +81,9 @@ func (a *App) routes() {
 
 	r.HandleFunc("/profile", a.handleAuth(a.handleProfile))
 	a.router.HandleFunc("/profile/edit", a.handleAuth(a.handleProfilesEdit()))
+	a.router.HandleFunc("/profiles/image", a.handleAuth(a.handleProfileImage()))
+	a.router.HandleFunc("/profiles/password", a.handleAuth(a.handleProfilePassword()))
+	a.router.HandleFunc("/profiles/email", a.handleAuth(a.handleProfileEmail()))
 
 	r.HandleFunc("/lesson/new", a.handleAuth(a.handleNewLesson))
 	r.HandleFunc("/lesson/edit", a.handleAuth(a.handleLessonEdit))

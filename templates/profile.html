@@ -3,7 +3,8 @@
 
 <head>
     {{ template "head" . }}
-
+    <script defer src="/static/vendor/htmx/1.8.5/htmx.min.js"></script>
+    <script defer src="/static/vendor/alpinejs/3.10.3/alpine.min.js"></script>
 </head>
 
 <body>
@@ -41,12 +42,22 @@
                 </div>
                 {{end}}
 
-                {{if eq .Data.ActiveRole "TUTOR"}}
+    
                 <div class="light-section " style="padding: 30px 20px">
-                    <h1>Mina bokade lektioner</h1>
-                </div>
-                {{end}}
+                    {{if eq .Data.ActiveRole "TUTOR"}}
+                        <h1>Mina mottagna förfrågningar</h1>
+                    {{else}}
+                        <h1>Mina skickade förfrågningar</h1>
+                    {{end}}
 
+                    <div
+                        id="lessons-container"
+                        hx-get="/lessons/list?status={{if .Data.ShowAllLessons}}all{{else}}active{{end}}"
+                        hx-trigger="load"
+                        hx-swap="innerHTML">
+                    </div>
+                </div>
+                
 
                 <div class="view-container center">
                     <div class="view-row flex-columns flex gap-8">
@@ -68,7 +79,6 @@
             </div>
 
             <div class="blue-section pattern-section center-align show-on-large">
-                
                 {{if eq .Data.ActiveRole "TUTOR"}}
                 <div class="view-image-wrapper view-row center-container">
                     <img class="view-image profile-picture" src="{{.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}"

@@ -62,7 +62,19 @@
         <div class="flex flex-row gap-16" style="margin-top: 40px">
           <button id="update-button" onclick="updateLessonRequest(event)" class="fill-on-small view-btn view-btn-white-fill view-btn-wide">Uppdatera</button>
           <a href="/home" class="fill-on-small view-btn view-btn-white view-btn-wide">Avbryt</a>
-          <button id="delete-button" onclick="deleteLessonRequest(event)" class="delete-btn fill-on-small view-btn view-btn-red view-btn-wide">Ta bort</button>
+          <button id="delete-button" onclick="confirmDelete(event)" class="delete-btn fill-on-small view-btn view-btn-red view-btn-wide">Ta bort</button>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-modal" class="overlay" style="display: none">
+          <div class="overlay-inner rounded-container view-container" style="background-color: white">
+            <h3 style="margin-bottom: 20px; color: #333">Är du säker?</h3>
+            <p style="margin-bottom: 30px; color: #666">Vill du verkligen ta bort denna lektion? Detta kan inte ångras.</p>
+            <div class="flex gap-16" style="justify-content: center">
+              <button onclick="closeDeleteModal()" class="view-btn view-btn-wide">Avbryt</button>
+              <button onclick="deleteLessonRequest()" class="view-btn view-btn-red view-btn-wide">Ta bort</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -122,6 +134,21 @@
             console.error("Error:", error);
             alert("Ett fel uppstod vid uppdateringen av lektionen.");
           });
+      }
+
+      function confirmDelete(e) {
+        e.preventDefault();
+        const modal = document.getElementById("delete-modal");
+        modal.style.display = "flex";
+      }
+
+      function closeDeleteModal() {
+        const modal = document.getElementById("delete-modal");
+        modal.style.display = "none";
+      }
+
+      function deleteLessonRequest() {
+        window.location.href = "/lesson/delete?lesson_id=" + lessonID;
       }
     </script>
     {{ template "footer" . }}

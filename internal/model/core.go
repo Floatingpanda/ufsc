@@ -60,6 +60,80 @@ func (c *Core) updateImage(tutorID, image string) error {
 	return err
 }
 
+func (c *Core) UpdateProfile(userID string, firstname, lastname, phone string, smsOptIn bool, locations, subjects, levels []string, bio string, onlineLessons bool, tutorID string) error {
+	tx, err := c.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Update user info
+	query := `UPDATE users SET first_name = $1, last_name = $2, phone = $3, sms_opt_in = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5`
+	_, err = tx.Exec(query, firstname, lastname, phone, smsOptIn, userID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	// If tutor, update tutor profile and relationships
+	if tutorID != "" {
+		// Update tutor bio and online lessons
+		query = `UPDATE tutors SET description = $1, online_lessons = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3`
+		_, err = tx.Exec(query, bio, onlineLessons, tutorID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to update tutor: %w", err)
+		}
+
+		// Delete existing relationships
+		_, err = tx.Exec("DELETE FROM tutor_locations WHERE tutor_id = $1", tutorID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to delete locations: %w", err)
+		}
+
+		_, err = tx.Exec("DELETE FROM tutor_subjects WHERE tutor_id = $1", tutorID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to delete subjects: %w", err)
+		}
+
+		_, err = tx.Exec("DELETE FROM tutor_levels WHERE tutor_id = $1", tutorID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to delete levels: %w", err)
+		}
+
+		// Add new locations
+		for _, locationID := range locations {
+			_, err = tx.Exec("INSERT INTO tutor_locations (tutor_id, location_id) VALUES ($1, $2)", tutorID, locationID)
+			if err != nil {
+				tx.Rollback()
+				return fmt.Errorf("failed to add location: %w", err)
+			}
+		}
+
+		// Add new subjects
+		for _, subjectID := range subjects {
+			_, err = tx.Exec("INSERT INTO tutor_subjects (tutor_id, subject_id) VALUES ($1, $2)", tutorID, subjectID)
+			if err != nil {
+				tx.Rollback()
+				return fmt.Errorf("failed to add subject: %w", err)
+			}
+		}
+
+		// Add new levels
+		for _, levelID := range levels {
+			_, err = tx.Exec("INSERT INTO tutor_levels (tutor_id, level_id) VALUES ($1, $2)", tutorID, levelID)
+			if err != nil {
+				tx.Rollback()
+				return fmt.Errorf("failed to add level: %w", err)
+			}
+		}
+	}
+
+	return tx.Commit()
+}
+
 func (c *Core) AddTutor(tutor Tutor, locations []string, subjects []string, levels []string) (string, error) {
 
 	tx, err := c.db.Begin()

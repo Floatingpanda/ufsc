@@ -1,5 +1,5 @@
 <div class="view-row-alt">
-  <div class="two-cols gap-16" style="max-width: 1000px; margin: auto">
+  <div class="{{if eq $.Data.Format "two-cols"}}two-cols{{else}}one-col{{end}} gap-16" style="max-width: 1000px; margin: auto">
     {{ range .Data.Lessons }}
 
     <div x-data="{ open: false }">
@@ -9,7 +9,7 @@
           <!-- <p class="list-text text-strong">{{ .Title }}</p> -->
           <p class="list-text text-strong">{{ .StudentName }} söker {{ .SubjectName }}-studiecoach</p>
           <p class="list-text">{{ if .OnlineLesson }}Online Hjälp{{ else }}Fysisk Träff{{ end }}</p>
-          <p class="list-text text-light">{{ if eq .BookedStatus "ACCEPTED" }}Bokad{{ else }}Ej Bokad{{ end }}</p>
+          <p class="list-text text-light">{{if .DeletedAt.Valid}}Borttagen{{else if eq .BookedStatus "ACCEPTED" }}Bokad{{ else }}Ej Bokad{{ end }}</p>
         </div>
       </div>
 
@@ -39,16 +39,40 @@
                 </div>
               </div>
 
+              {{ if .Tutors }}
+              <div class=" view-row-alt">
+                <h3>Tillfrågade studiecoacher</h3>
+                <div class="view-row">
+                  {{ range .Tutors }}
+                  <div class="list-item-small">
+                    {{ if eq .BookedStatus "ACCEPTED" }}
+                    <p class="invite-status" style="background-image: url(&quot;/static/images/app/icon-status-accepted.png&quot;)">{{.Alias}}</p>
+                    {{ else }}
+                    <p class="invite-status" style="background-image: url(&quot;/static/images/app/icon-status-invited.png&quot;)">{{.Alias}}</p>
+                    {{ end }}
+                  </div>
+                  {{ end }}
+                </div>
+              </div>
+              {{ end}}
+
+
               {{if not .DeletedAt.Valid}} {{if not .AcceptedAt.Valid}} {{ if $.Data.IsTutor }}
-              <div class="view-row-alt"><a href="/lesson/accept?lesson_id={{ .ID }}" class="view-btn view-btn-green view-btn-wide"> Acceptera </a></div>
-              {{else}}
-              <div class="view-row-alt"><a href="/lesson/edit?lesson_id={{ .ID }}" class="view-btn view-btn-red view-btn-wide"> Ändra </a></div>
-              {{ end }} {{ end }} {{ end }}
+                <div class="view-row-alt">
+                <a href="/lesson/accept?lesson_id={{ .ID }}" class="view-btn view-btn-green view-btn-wide"> Acceptera </a>
+                </div>
+                {{else}}
+                <div class="view-row-alt"></div>
+                <a href="/lesson/edit?lesson_id={{ .ID }}" class="view-btn view-btn-red view-btn-wide"> Ändra </a>
+                </div>
+                {{ end }} {{ end }} {{ end }}
+
+              </div>
             </div>
           </div>
         </div>
       </div>
+      {{ end }}
     </div>
-    {{ end }}
   </div>
 </div>

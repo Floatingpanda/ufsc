@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     {{ template "head" . }}
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Lessons container loaded via HTMX -->
-            <div id="lessons-container" hx-get="/lessons?status={{if .Data.ShowAllLessons}}all{{else}}active{{end}}" hx-trigger="load" hx-swap="innerHTML">
+            <div id="lessons-container" hx-get="/lessons?status={{if .Data.ShowAllLessons}}all{{else}}active{{end}}&format=two-cols" hx-trigger="load" hx-swap="innerHTML">
               <!-- Initial lessons loaded on page load -->
             </div>
           </div>
@@ -62,7 +62,7 @@
 
       async function fetchLessons(status) {
         try {
-          const response = await fetch(`/lessons/list?lessons=${status}`);
+          const response = await fetch(`/lessons/list?lessons=${status}&format=two-cols`);
           const html = await response.text();
           lessonsContainer.innerHTML = html;
         } catch (error) {

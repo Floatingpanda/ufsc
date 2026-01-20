@@ -42,7 +42,7 @@ func (r *Repository) Tutor(id string) (*Tutor, error) {
 }
 
 func (r *Repository) TutorByUserID(userID string) (*Tutor, error) {
-	query := "SELECT id, user_id, alias, online_lessons, description, image FROM tutors WHERE user_id = $1"
+	query := "SELECT id, user_id, alias, online_lessons, description, image, updated_at FROM tutors WHERE user_id = $1"
 	var t Tutor
 	if err := r.db.Get(&t, query, userID); err != nil {
 		return nil, err

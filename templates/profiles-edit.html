@@ -32,13 +32,18 @@
               <input type="text" name="phone" id="phone" class="form-input" value="{{.Data.Profile.User.Phone}}" required />
               <p class="form-tip">Ändra telefonnummer</p>
 
+              {{if .Data.Profile.IsTutor }}
               <label for="locations" class="form-label">Dina platser</label>
               <select multiple id="locations" name="locations">
                 {{range .Data.Locations}}
                 <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
                 {{end}}
               </select>
-              <p class="form-tip">Lägg till eller ta bort platser</p>
+
+              <div class="view-row">
+                <input class="form-checkbox" id="online-lessons" type="checkbox" name="online_lessons" {{if .Data.Tutor.OnlineLessons}}checked{{end}} />
+                <label class="form-checkbox-label" for="online-lessons">Tillgänglig för online-lektioner</label>
+              </div>
 
               <label for="subjects" class="form-label">Dina Ämnen</label>
               <select multiple id="subjects" name="subjects">
@@ -46,7 +51,6 @@
                 <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
                 {{end}}
               </select>
-              <p class="form-tip">Lägg till eller ta bort ämnen du lär ut</p>
 
               <label for="levels" class="form-label">Dina nivåer</label>
               <select multiple id="levels" name="levels">
@@ -54,11 +58,10 @@
                 <option value="{{.ID}}" {{if .Selected}} selected {{end}}>{{.Name}}</option>
                 {{end}}
               </select>
-              <p class="form-tip">Lägg till eller ta bort nivåer du lär ut på</p>
 
-              {{if .Data.Profile.IsTutor }}
               <label for="bio" class="form-label">Beskriv dig själv</label>
               <textarea class="form-textarea" name="bio" id="bio" placeholder="Beskriv dig själv för andra användare" required>{{.Data.Tutor.Bio}}</textarea>
+
               {{end}}
 
               <div class="view-row">
@@ -77,18 +80,21 @@
         </div>
 
         <div class="group-column">
+          {{if .Data.Profile.IsTutor }}
           <div class="view-container">
-            <img class="view-image" src="{{.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}" />
+            <img class="view-image" src="{{.Props.Static}}/images/tutors/{{.Data.Tutor.Image}}?{{.Data.Tutor.UpdatedAt}}" />
             <label class="view-image-label" for="image">Välj bild</label>
           </div>
           <div class="view-container view-image-form">
-            <form enctype="multipart/form-data" action="/profiles/image" method="post">
-              <input type="file" name="image" id="image" class="view-file" accept=".png,.jpg,.gif" required />
-              <input type="submit" class="view-btn" value="Ändra bild" style="display: none" />
+            <form enctype="multipart/form-data" action="/profiles/image" method="post" id="image-form">
+              <input type="file" name="image" id="image" class="view-file" accept=".png,.jpg,.gif" required onchange="document.getElementById('submit-image').style.display='block'" />
+              <input type="submit" id="submit-image" class="view-btn view-image-label" value="Ändra bild" style="display: none" />
             </form>
           </div>
+          {{end}}
 
           <div class="view-container">
+            {{if .Data.Profile.IsTutor }}
             <form action="/profiles/password" method="post">
               <label for="password" class="form-label">Lösenord</label>
               <input type="password" name="password" id="password" class="form-input" min="8" placeholder="Ange nytt lösenod" required />
@@ -99,6 +105,7 @@
                 <input type="submit" class="view-btn" value="Ändra lösenord" />
               </div>
             </form>
+            {{end}}
 
             <form action="/profiles/email" method="post">
               <label for="email" class="form-label">Email</label>

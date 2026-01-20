@@ -154,6 +154,8 @@ type LessonView struct {
 	BookedStatus string         `db:"booked_status"`
 	AcceptedAt   sql.NullTime   `db:"accepted_at"`
 	DeletedAt    sql.NullTime   `db:"deleted_at"`
+
+	Tutors []TutorView
 }
 
 type Profile struct {

@@ -878,12 +878,25 @@ func (a *App) handleListLessons(w http.ResponseWriter, r *http.Request) {
 		lessonRequests = filteredLessons
 	}
 
-	log.Println("AT", a.activeTutor(r))
+	// For student who sent only, fetch the tutors for each lesson
+	if !a.activeTutor(r) {
+		for i := range lessonRequests {
+			tutors, err := a.repo.LessonTutors(lessonRequests[i].ID)
+			if err != nil {
+				log.Println("failed to get lesson tutors:", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			lessonRequests[i].Tutors = tutors
+		}
+	}
+
 	page := a.view.
-		Page("home-lessons-partial.html").
+		Page("lessons-list.html").
 		Add("IsTutor", a.activeTutor(r)).
 		Add("Lessons", lessonRequests).
-		Add("ShowAllLessons", showAllLessons)
+		Add("ShowAllLessons", showAllLessons).
+		Add("Format", r.URL.Query().Get("format"))
 
 	if err := a.view.Execute(w, page); err != nil {
 		log.Printf("handleListLessons: %v", err)
@@ -1053,42 +1066,131 @@ func (a *App) handleProfilesEdit() http.HandlerFunc {
 			if err := a.view.Execute(w, page); err != nil {
 				log.Printf("handleProfilesEdit: %v", err)
 			}
+		case http.MethodPost:
+			profile := a.profile(r)
+			tutor := a.tutor(r)
+
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			firstname := r.FormValue("firstname")
+			lastname := r.FormValue("lastname")
+			phone := r.FormValue("phone")
+			smsOptIn := r.FormValue("notify_sms") == "on"
+			onlineLessons := r.FormValue("online_lessons") == "on"
+			locations := r.Form["locations"]
+			subjects := r.Form["subjects"]
+			levels := r.Form["levels"]
+			bio := r.FormValue("bio")
+
+			if err := a.core.UpdateProfile(profile.User.ID, firstname, lastname, phone, smsOptIn, locations, subjects, levels, bio, onlineLessons, tutor.ID); err != nil {
+				log.Printf("handleProfilesEdit: unable to update profile: %v", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			http.Redirect(w, r, "/profile", http.StatusFound)
+		default:
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		}
-		// case http.MethodPost:
-		// 	profile := a.profile(r)
+	}
+}
 
-		// 	if err := r.ParseForm(); err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
+func (a *App) handleProfileImage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+			return
+		}
 
-		// 	// individual instructors cannot change their year, firstname or lastname.
-		// 	if profile.ProfileRole == "INSTRUCTOR" && !profile.ProfileIsOrg {
-		// 		r.Form.Set("year", strconv.Itoa(int(profile.ProfileYear)))
-		// 		r.Form.Set("firstname", profile.ProfileFirstname)
-		// 		r.Form.Set("lastname", profile.ProfileLastname)
-		// 	}
+		tutor := a.tutor(r)
+		if tutor.ID == "" {
+			http.Error(w, "only tutors can update images", http.StatusForbidden)
+			return
+		}
 
-		// 	update, err := service.ParseUpdateProfileRequest(r.Form)
-		// 	if err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
+		if err := r.ParseMultipartForm(10 << 20); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-		// 	if profile.ProfileID != update.ID {
-		// 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-		// 		return
-		// 	}
+		file, _, err := r.FormFile("image")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
 
-		// 	if err := a.svc.UpdateProfile(update); err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
+		if err := a.core.UpdateImage(file, tutor.ID); err != nil {
+			log.Printf("handleProfileImage: unable to update image: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-		// 	http.Redirect(w, r, "/profiles", http.StatusFound)
-		// default:
-		// 	http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		// 	return
-		// }
+		http.Redirect(w, r, "/profile/edit", http.StatusFound)
+	}
+}
+
+func (a *App) handleProfilePassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+			return
+		}
+
+		profile := a.profile(r)
+
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		password := r.FormValue("password")
+		if len(password) < 8 {
+			http.Error(w, "password must be at least 8 characters", http.StatusBadRequest)
+			return
+		}
+
+		if err := a.auth.UpdatePassword(profile.User.ID, password); err != nil {
+			log.Printf("handleProfilePassword: unable to update password: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, "/profile/edit", http.StatusFound)
+	}
+}
+
+func (a *App) handleProfileEmail() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+			return
+		}
+
+		profile := a.profile(r)
+
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		email := r.FormValue("email")
+		emailConfirm := r.FormValue("emailConfirm")
+
+		if email != emailConfirm {
+			http.Error(w, "emails do not match", http.StatusBadRequest)
+			return
+		}
+
+		if err := a.auth.UpdateEmail(profile.User.ID, email); err != nil {
+			log.Printf("handleProfileEmail: unable to update email: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, "/profile/edit", http.StatusFound)
 	}
 }

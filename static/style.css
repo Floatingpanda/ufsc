@@ -540,6 +540,13 @@ a.view-btn {
     align-items: start;
 }
 
+.one-col {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  justify-content: center;
+}
+
+
 .two-cols {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1463,7 +1470,12 @@ a.view-btn {
   }
 }
 
-
-
+.invite-status {
+    background-position: 0 50%;
+    background-repeat: no-repeat;
+    padding-left: 26px;
+    width: 50%;
+    max-width: 250px;
+}
 
 [x-cloak] { display: none !important; }
